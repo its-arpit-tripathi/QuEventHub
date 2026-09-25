@@ -43,6 +43,11 @@ const allowedOrigins = [
 app.use(cors());
 app.use(express.json());
 
+// Health check route to keep Render awake
+app.get('/ping', (req, res) => {
+    res.status(200).send('pong');
+});
+
 
 app.use('/api/auth', authRoute);  
 app.use('/api/events', eventRoute);

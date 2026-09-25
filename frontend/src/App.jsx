@@ -7,7 +7,7 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Toast from "./components/Toast";
-import RequestLoader from "./components/RequestLoader";
+
 
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
@@ -38,7 +38,7 @@ export default function App() {
         <Navbar />
       </ErrorBoundary>
       <Toast />
-      <RequestLoader />
+
 
       {/* PAGES */}
       <main className="min-h-screen pt-20">
