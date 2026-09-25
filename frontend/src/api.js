@@ -11,6 +11,7 @@ const api = axios.create({
 // Attach JWT token automatically
 api.interceptors.request.use(
   (config) => {
+    window.dispatchEvent(new Event("app:request-start"));
     try {
       if (config.data instanceof FormData) {
         delete config.headers['Content-Type'];
@@ -25,6 +26,7 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    window.dispatchEvent(new Event("app:request-end"));
     console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
@@ -32,8 +34,12 @@ api.interceptors.request.use(
 
 // Handle authentication errors globally
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    window.dispatchEvent(new Event("app:request-end"));
+    return response;
+  },
   (error) => {
+    window.dispatchEvent(new Event("app:request-end"));
     // Handle network errors
     if (!error.response) {
       console.error('Network error:', error.message);

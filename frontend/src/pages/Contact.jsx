@@ -5,12 +5,11 @@ import {
   MapPin, 
   Send, 
   Loader2, 
-  CheckCircle, 
-  AlertCircle, 
   User, 
   MessageSquare 
 } from 'lucide-react';
 import api from '../api';
+import { showToast } from '../utils/toast';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -19,35 +18,30 @@ const Contact = () => {
     message: ""
   });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setMessage("");
-    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
-    setError("");
 
     try {
       const res = await api.post("/contact", formData);
       
       if (res.data.success) {
-        setMessage(res.data.message || "Thank you for your message! We'll get back to you soon.");
+        showToast(res.data.message || "Your message has been sent successfully. We'll get back to you soon.", "success");
         setFormData({ name: "", email: "", message: "" });
       } else {
-        setError(res.data.message || "Failed to send message. Please try again.");
+        showToast(res.data.message || "Failed to send message. Please try again.", "error");
       }
     } catch (err) {
       console.error("Contact form error:", err);
-      setError(
+      showToast(
         err.response?.data?.message || 
-        "Failed to send your message. Please try again later."
+        "Failed to send your message. Please try again later.",
+        "error"
       );
     } finally {
       setLoading(false);
@@ -173,22 +167,6 @@ const Contact = () => {
                 ></textarea>
               </div>
             </div>
-
-            {/* Success Message */}
-            {message && (
-              <div className="bg-green-50 border border-green-200 p-4 rounded-lg flex items-center animate-fade-in">
-                <CheckCircle className="text-green-500 mr-3" size={20} />
-                <p className="text-green-700 font-medium text-sm">{message}</p>
-              </div>
-            )}
-
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 p-4 rounded-lg flex items-center animate-fade-in">
-                <AlertCircle className="text-red-500 mr-3" size={20} />
-                <p className="text-red-700 font-medium text-sm">{error}</p>
-              </div>
-            )}
 
             {/* Submit Button */}
             <button 

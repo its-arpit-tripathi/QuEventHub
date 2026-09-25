@@ -49,7 +49,7 @@ export default function Toast() {
   const Icon = style.icon;
 
   return (
-    <div className={`fixed right-4 top-24 z-[100] flex max-w-sm items-start gap-3 rounded-2xl border px-4 py-3 shadow-xl ${style.container}`} role="status">
+    <div className={`fixed right-4 top-[5.5rem] z-[100] flex w-[min(92vw,28rem)] max-w-sm items-start gap-3 rounded-2xl border px-4 py-3 shadow-xl ${style.container}`} role="status">
       <Icon size={20} className={`mt-0.5 shrink-0 ${style.iconColor}`} />
       <p className="flex-1 text-sm font-medium leading-6">{toast.message}</p>
       <button
