@@ -18,6 +18,43 @@ router.get('/users', async (_req, res) => {
   }
 });
 
+// Update user (admin can change basic fields and role)
+router.put('/users/:id', async (req, res) => {
+  try {
+    const allowed = ['name', 'q_id', 'course', 'section', 'year', 'phone', 'role'];
+    const updates = {};
+    allowed.forEach((key) => {
+      if (req.body[key] !== undefined) updates[key] = req.body[key];
+    });
+
+    const user = await User.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+      runValidators: true,
+    }).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.json({ success: true, data: user });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
+// Delete user
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const deleted = await User.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.json({ success: true, message: 'User deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // Get all clubs
 router.get('/clubs', async (_req, res) => {
   try {
@@ -29,4 +66,5 @@ router.get('/clubs', async (_req, res) => {
 });
 
 export default router;
+
 

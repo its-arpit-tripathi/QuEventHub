@@ -1,417 +1,442 @@
-// // pages/Admin.jsx
-// import React, { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import api from "../api"; // New API utility
-// import { Loader2, Plus, Edit, Trash2, X } from "lucide-react";
+import React, { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api";
+import { 
+  Loader2, 
+  Users, 
+  Tent, 
+  Search, 
+  Plus, 
+  Edit, 
+  Trash2, 
+  X
+} from "lucide-react";
 
-// const Admin = () => {
-//   const [events, setEvents] = useState([]);
-//   const [clubs, setClubs] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState("");
-//   const nav = useNavigate();
-
-//   // forms
-//   const [eventForm, setEventForm] = useState({ title: "", date: "", time: "", venue: "", description: "", category: "Technical" }); // Added category
-//   const [clubForm, setClubForm] = useState({ name: "", meeting: "", time: "", venue: "", description: "" });
-
-//   // edit state
-//   const [editingEvent, setEditingEvent] = useState(null);
-//   const [editingClub, setEditingClub] = useState(null);
-
-//   // image files
-//   const [eventImageFile, setEventImageFile] = useState(null);
-//   const [clubImageFile, setClubImageFile] = useState(null);
-
-//   useEffect(() => {
-//     load();
-//   }, []);
-
-//   const load = async () => {
-//     setLoading(true);
-//     setError("");
-//     try {
-//       // NOTE: Assuming your backend has admin-only endpoints for fetching all events/clubs
-//       // If not, you'll need to create them (e.g., api.get("/admin/events"))
-//       const [evRes, clRes] = await Promise.all([api.get("/events"), api.get("/clubs")]);
-//       setEvents(evRes.data.data); // Adjusting based on backend format { data: [...] }
-//       setClubs(clRes.data.data); // Assuming similar structure for clubs
-//     } catch (err) {
-//       console.error("Load Error:", err);
-//       setError("Failed to load data. Check API connection and token.");
-//     }
-//     setLoading(false);
-//   };
-
-//   const logout = () => {
-//     localStorage.removeItem("token");
-//     nav("/login");
-//   };
-
-//   // Helper to submit form as multipart/form-data
-//   const buildFormData = (payload, file) => {
-//     const form = new FormData();
-//     Object.keys(payload).forEach(k => form.append(k, payload[k]));
-//     if (file) form.append("image", file); // Ensure backend expects key 'image'
-//     return form;
-//   };
-
-//   // CRUD for Events
-//   const submitEvent = async () => {
-//     setLoading(true);
-//     try {
-//       const formData = buildFormData(eventForm, eventImageFile);
-//       if (editingEvent) {
-//         await api.put(`/events/${editingEvent._id}`, formData, { headers: { "Content-Type": "multipart/form-data" } });
-//         setEditingEvent(null);
-//       } else {
-//         await api.post("/events", formData, { headers: { "Content-Type": "multipart/form-data" } });
-//       }
-//       setEventForm({ title: "", date: "", time: "", venue: "", description: "", category: "Technical" });
-//       setEventImageFile(null);
-//       load();
-//     } catch (err) {
-//       console.error(err);
-//       setError("Failed to save event.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const deleteEvent = async (id) => {
-//     if (!window.confirm("Are you sure you want to delete this event?")) return;
-//     try {
-//       await api.delete(`/events/${id}`);
-//       load();
-//     } catch (err) {
-//       console.error(err);
-//       setError("Failed to delete event.");
-//     }
-//   };
-
-//   const startEditEvent = (e) => {
-//     setEditingEvent(e);
-//     setEventForm({ title: e.title, date: e.date, time: e.time, venue: e.venue, description: e.description, category: e.category });
-//   };
-
-//   // CRUD for Clubs (Similar logic, assuming a /clubs endpoint)
-//   const submitClub = async () => {
-//     setLoading(true);
-//     try {
-//       const formData = buildFormData(clubForm, clubImageFile);
-//       if (editingClub) {
-//         await api.put(`/clubs/${editingClub._id}`, formData, { headers: { "Content-Type": "multipart/form-data" } });
-//         setEditingClub(null);
-//       } else {
-//         await api.post("/clubs", formData, { headers: { "Content-Type": "multipart/form-data" } });
-//       }
-//       setClubForm({ name: "", meeting: "", time: "", venue: "", description: "" });
-//       setClubImageFile(null);
-//       load();
-//     } catch (err) {
-//       console.error(err);
-//       setError("Failed to save club.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const deleteClub = async (id) => {
-//     if (!window.confirm("Are you sure you want to delete this club?")) return;
-//     try {
-//       await api.delete(`/clubs/${id}`);
-//       load();
-//     } catch (err) {
-//       console.error(err);
-//       setError("Failed to delete club.");
-//     }
-//   };
-
-//   const startEditClub = (c) => {
-//     setEditingClub(c);
-//     setClubForm({ name: c.name, meeting: c.meeting, time: c.time, venue: c.venue, description: c.description });
-//   };
-  
-//   const EventForm = () => (
-//     <div className="flex flex-col gap-2">
-//       <input className="w-full border p-2 rounded" placeholder="Title" value={eventForm.title} onChange={e => setEventForm({ ...eventForm, title: e.target.value })} />
-//       <select className="w-full border p-2 rounded" value={eventForm.category} onChange={e => setEventForm({ ...eventForm, category: e.target.value })}>
-//           <option value="Technical">Technical</option>
-//           <option value="Cultural">Cultural</option>
-//           <option value="Sports">Sports</option>
-//           <option value="Workshop">Workshop</option>
-//       </select>
-//       <input className="w-full border p-2 rounded" placeholder="Date (e.g., 2025-12-20)" type="date" value={eventForm.date} onChange={e => setEventForm({ ...eventForm, date: e.target.value })} />
-//       <input className="w-full border p-2 rounded" placeholder="Time" type="time" value={eventForm.time} onChange={e => setEventForm({ ...eventForm, time: e.target.value })} />
-//       <input className="w-full border p-2 rounded" placeholder="Venue" value={eventForm.venue} onChange={e => setEventForm({ ...eventForm, venue: e.target.value })} />
-//       <textarea className="w-full border p-2 rounded" placeholder="Description" value={eventForm.description} onChange={e => setEventForm({ ...eventForm, description: e.target.value })} />
-      
-//       <label className="block mt-2 text-sm font-medium text-gray-700">Event Image (Optional)</label>
-//       <input type="file" onChange={e => setEventImageFile(e.target.files[0])} className="p-1 border rounded w-full"/>
-
-//       <div className="flex gap-3 mt-3">
-//         <button onClick={submitEvent} disabled={loading} className="bg-green-600 text-white px-3 py-2 rounded flex items-center gap-1 hover:bg-green-700 transition">
-//           {editingEvent ? <Edit size={18} /> : <Plus size={18} />} {editingEvent ? "Save Edit" : "Add Event"}
-//         </button>
-//         {editingEvent && <button onClick={() => { setEditingEvent(null); setEventImageFile(null); }} className="px-3 py-2 border rounded flex items-center gap-1 hover:bg-gray-100 transition"><X size={18} /> Cancel Edit</button>}
-//       </div>
-//     </div>
-//   );
-
-//   // Club form similar to Event Form (omitted for brevity)
-
-//   return (
-//     <div className="min-h-screen p-6 bg-gray-50">
-//       <div className="max-w-7xl mx-auto">
-//         <div className="flex justify-between items-center mb-6 border-b pb-4">
-//           <h1 className="text-3xl font-bold text-slate-800">👑 Admin Dashboard</h1>
-//           <button className="bg-red-600 text-white px-4 py-2 rounded flex items-center gap-1 hover:bg-red-700 transition" onClick={logout}>
-//             Logout
-//           </button>
-//         </div>
-        
-//         {error && <p className="text-red-500 bg-red-100 p-3 rounded mb-4">{error}</p>}
-
-//         <div className="grid md:grid-cols-2 gap-8">
-//           {/* EVENTS */}
-//           <div className="bg-white p-6 rounded-lg shadow-xl">
-//             <h2 className="text-2xl font-semibold mb-4 border-b pb-2">📅 Manage Events</h2>
-//             {EventForm()}
-
-//             <ul className="mt-6 border-t pt-4 space-y-3">
-//               <h3 className="font-semibold text-lg">Current Events ({events.length})</h3>
-//               {loading ? <li className="flex justify-center py-4"><Loader2 size={24} className="animate-spin text-blue-500" /></li> : events.map(ev => (
-//                 <li key={ev._id} className="flex items-center justify-between p-3 border rounded hover:bg-gray-50 transition">
-//                   <div>
-//                     <div className="font-semibold">{ev.title}</div>
-//                     <div className="text-sm text-gray-500">{new Date(ev.date).toLocaleDateString()} — {ev.time}</div>
-//                   </div>
-//                   <div className="flex gap-2">
-//                     <button className="text-blue-600 hover:text-blue-800 p-1 rounded" onClick={() => startEditEvent(ev)}><Edit size={18} /></button>
-//                     <button className="text-red-600 hover:text-red-800 p-1 rounded" onClick={() => deleteEvent(ev._id)}><Trash2 size={18} /></button>
-//                   </div>
-//                 </li>
-//               ))}
-//             </ul>
-//           </div>
-
-//           {/* CLUBS (Omitted for brevity, but should follow the same pattern) */}
-//           {/* ... Club management code ... */}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Admin;
-
-
-
-
-
-
-
-// src/pages/Admin.jsx
-import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Calendar } from 'lucide-react';
-import DashboardButton from '../components/DashboardButton.jsx';
-
-// --- Event Form Component (Modal) ---
-const EventForm = ({ event, onClose, onSave }) => {
-    const [formData, setFormData] = useState(event || { title: '', date: '', capacity: 0, status: 'Open' });
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleInputFocus = (e) => {
-        e.target.focus();
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave(formData);
-    };
-
-    const isEdit = !!event;
-
-    return (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center p-4 z-50">
-            <div className="bg-white p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-100">
-                <h2 className="text-2xl font-bold mb-6 text-indigo-700">
-                    {isEdit ? 'Edit Event' : 'Create New Event'}
-                </h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <input
-                        type="text"
-                        name="title"
-                        placeholder="Event Title"
-                        value={formData.title}
-                        onChange={handleChange}
-                        onFocus={handleInputFocus}
-                        onClick={handleInputFocus}
-                        required
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
-                        autoFocus
-                    />
-                    <div className="flex space-x-4">
-                        <input
-                            type="date"
-                            name="date"
-                            value={formData.date}
-                            onChange={handleChange}
-                            onFocus={handleInputFocus}
-                            onClick={handleInputFocus}
-                            required
-                            className="w-1/2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
-                        />
-                        <input
-                            type="number"
-                            name="capacity"
-                            placeholder="Capacity"
-                            value={formData.capacity}
-                            onChange={handleChange}
-                            onFocus={handleInputFocus}
-                            onClick={handleInputFocus}
-                            min="1"
-                            required
-                            className="w-1/2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
-                        />
-                    </div>
-                    <select
-                        name="status"
-                        value={formData.status}
-                        onChange={handleChange}
-                        onFocus={handleInputFocus}
-                        onClick={handleInputFocus}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
-                    >
-                        <option value="Open">Open</option>
-                        <option value="Filling">Filling</option>
-                        <option value="Closed">Closed</option>
-                        <option value="Cancelled">Cancelled</option>
-                    </select>
-
-                    <div className="flex justify-end space-x-3 pt-4">
-                        <DashboardButton onClick={onClose} color="gray" className="!bg-gray-400 hover:!bg-gray-500">
-                            Cancel
-                        </DashboardButton>
-                        <DashboardButton type="submit" color="indigo">
-                            {isEdit ? 'Update Event' : 'Create Event'}
-                        </DashboardButton>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
+const emptyUserForm = {
+  name: "",
+  q_id: "",
+  email: "",
+  phone: "",
+  course: "",
+  section: "",
+  year: "",
+  role: "student",
 };
 
-// --- AdminEvents Component (CRUD Table) ---
-const Admin = ({ events, setEvents }) => {
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingEvent, setEditingEvent] = useState(null);
+const Admin = () => {
+  const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const [clubs, setClubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  
+  // UI State
+  const [activeTab, setActiveTab] = useState("users"); // 'users' | 'clubs'
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  
+  // Form State
+  const [userForm, setUserForm] = useState(emptyUserForm);
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [savingUser, setSavingUser] = useState(false);
 
-    const openCreateModal = () => {
-        setEditingEvent(null);
-        setIsFormOpen(true);
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const [uRes, cRes] = await Promise.all([
+          api.get("/admin/users"),
+          api.get("/admin/clubs"),
+        ]);
+        setUsers(uRes.data.data || []);
+        setClubs(cRes.data.data || []);
+      } catch (e) {
+        console.error(e);
+        setError("Failed to load admin data. Ensure you have admin privileges.");
+      } finally {
+        setLoading(false);
+      }
     };
+    load();
+  }, []);
 
-    const openEditModal = (event) => {
-        setEditingEvent(event);
-        setIsFormOpen(true);
+  // Filter Logic
+  const filteredData = useMemo(() => {
+    const lowerQuery = searchQuery.toLowerCase();
+    if (activeTab === "users") {
+      return users.filter(u => 
+        u.name?.toLowerCase().includes(lowerQuery) || 
+        u.q_id?.toLowerCase().includes(lowerQuery) ||
+        u.email?.toLowerCase().includes(lowerQuery)
+      );
+    } else {
+      return clubs.filter(c => 
+        c.name?.toLowerCase().includes(lowerQuery) ||
+        c.category?.toLowerCase().includes(lowerQuery)
+      );
+    }
+  }, [users, clubs, activeTab, searchQuery]);
+
+  // Handlers
+  const openModal = (user = null) => {
+    if (user) {
+      setEditingUserId(user._id);
+      setUserForm({
+        name: user.name || "",
+        q_id: user.q_id || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        course: user.course || "",
+        section: user.section || "",
+        year: user.year || "",
+        role: user.role || "student",
+      });
+    } else {
+      setEditingUserId(null);
+      setUserForm(emptyUserForm);
+    }
+    setIsUserModalOpen(true);
+  };
+
+  const handleUserSubmit = async (e) => {
+    e.preventDefault();
+    setSavingUser(true);
+    try {
+      if (editingUserId) {
+        const payload = { ...userForm };
+        const res = await api.put(`/admin/users/${editingUserId}`, payload);
+        const updated = res.data.data;
+        setUsers((prev) => prev.map((u) => (u._id === editingUserId ? updated : u)));
+      } else {
+        const payload = {
+          ...userForm,
+          password: "TempPass123!", // Default password logic
+        };
+        await api.post("/auth/register", payload);
+        const resUsers = await api.get("/admin/users");
+        setUsers(resUsers.data.data || []);
+      }
+      setIsUserModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Failed to save user");
+    } finally {
+      setSavingUser(false);
+    }
+  };
+
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm("Are you sure you want to permanently delete this user?")) return;
+    try {
+      await api.delete(`/admin/users/${id}`);
+      setUsers((prev) => prev.filter((x) => x._id !== id));
+    } catch (error) {
+      alert("Failed to delete user");
+    }
+  };
+
+  const handleDeleteClub = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this club?")) return;
+    try {
+      await api.delete(`/clubs/${id}`);
+      setClubs((prev) => prev.filter((x) => x._id !== id));
+    } catch (err) {
+      alert("Failed to delete club");
+    }
+  };
+
+  const handleRoleChange = async (userId, newRole) => {
+    try {
+      const res = await api.put(`/admin/users/${userId}`, { role: newRole });
+      const updated = res.data.data;
+      setUsers((prev) => prev.map((x) => (x._id === userId ? updated : x)));
+    } catch (err) {
+      alert("Failed to update role");
+    }
+  };
+
+  // Helper Components
+  const Badge = ({ children, type }) => {
+    const colors = {
+        admin: "bg-purple-100 text-purple-800 border-purple-200",
+        student: "bg-blue-100 text-blue-800 border-blue-200",
+        technical: "bg-indigo-100 text-indigo-800",
+        cultural: "bg-pink-100 text-pink-800",
+        default: "bg-gray-100 text-gray-800"
     };
+    const style = colors[type] || colors.default;
+    return <span className={`px-2 py-0.5 rounded text-xs font-medium border ${style} capitalize`}>{children}</span>;
+  };
 
-    const handleSave = (formData) => {
-        if (editingEvent) {
-            // Update logic (PUT/PATCH API call in real app)
-            setEvents(events.map(e => (e.id === formData.id ? { ...formData, registered: e.registered } : e)));
-        } else {
-            // Create logic (POST API call in real app)
-            const newEvent = { ...formData, id: Date.now().toString(), registered: 0 };
-            setEvents([...events, newEvent]);
-        }
-        setIsFormOpen(false);
-    };
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <Loader2 className="animate-spin text-indigo-600 w-10 h-10" />
+    </div>
+  );
 
-    const handleDelete = (eventId) => {
-        // IMPORTANT: Replaced window.confirm with a console message to comply with environment restrictions.
-        console.log(`Simulating deletion of event: ${eventId}`);
-        // Delete logic (DELETE API call in real app)
-        setEvents(events.filter(e => e.id !== eventId));
-    };
-
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'Open': return 'bg-green-100 text-green-800';
-            case 'Filling': return 'bg-yellow-100 text-yellow-800';
-            case 'Closed': return 'bg-red-100 text-red-800';
-            case 'Cancelled': return 'bg-gray-100 text-gray-800';
-            default: return 'bg-blue-100 text-blue-800';
-        }
-    };
-
-    return (
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-            <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-semibold text-gray-700 flex items-center space-x-2">
-                    <Calendar className="w-6 h-6 text-indigo-500" />
-                    <span>Event Management (CRUD)</span>
-                </h3>
-                <DashboardButton onClick={openCreateModal} icon={Plus} color="indigo">
-                    Create New Event
-                </DashboardButton>
+  return (
+    <div className="min-h-screen bg-gray-50/50 p-6 pt-24">
+      <div className="max-w-7xl mx-auto space-y-6">
+        
+        {/* Header Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4">
+                <div className="p-3 bg-blue-50 text-blue-600 rounded-lg"><Users size={24} /></div>
+                <div>
+                    <p className="text-sm text-gray-500 font-medium">Total Users</p>
+                    <h3 className="text-2xl font-bold text-gray-900">{users.length}</h3>
+                </div>
             </div>
-
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacity</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {events.map((event) => (
-                            <tr key={event.id} className="hover:bg-gray-50 transition duration-100">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{event.title}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{event.date}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {event.registered} / {event.capacity}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-3 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(event.status)}`}>
-                                        {event.status}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                    <button
-                                        onClick={() => openEditModal(event)}
-                                        className="text-indigo-600 hover:text-indigo-900 p-1 rounded-full hover:bg-indigo-50 transition"
-                                        title="Edit Event"
-                                    >
-                                        <Edit className="w-5 h-5" />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(event.id)}
-                                        className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50 transition"
-                                        title="Delete Event"
-                                    >
-                                        <Trash2 className="w-5 h-5" />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4">
+                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg"><Tent size={24} /></div>
+                <div>
+                    <p className="text-sm text-gray-500 font-medium">Total Clubs</p>
+                    <h3 className="text-2xl font-bold text-gray-900">{clubs.length}</h3>
+                </div>
             </div>
-
-            {isFormOpen && <EventForm event={editingEvent} onClose={() => setIsFormOpen(false)} onSave={handleSave} />}
+            <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+               <div>
+                 <p className="text-sm text-gray-500 font-medium">Quick Actions</p>
+                 <button onClick={() => navigate("/admin/clubs")} className="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium hover:underline">
+                    Manage Club Settings &rarr;
+                 </button>
+               </div>
+            </div>
         </div>
-    );
+
+        {error && (
+           <div className="bg-red-50 text-red-700 p-4 rounded-lg border border-red-100 text-sm">{error}</div>
+        )}
+
+        {/* Main Content */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          
+          {/* Toolbar */}
+          <div className="p-5 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex bg-gray-100 p-1 rounded-lg self-start">
+              <button 
+                onClick={() => { setActiveTab("users"); setSearchQuery(""); }}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'users' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                Users
+              </button>
+              <button 
+                onClick={() => { setActiveTab("clubs"); setSearchQuery(""); }}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'clubs' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                Clubs
+              </button>
+            </div>
+
+            <div className="flex gap-3 w-full md:w-auto">
+              <div className="relative flex-1 md:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input 
+                  type="text" 
+                  placeholder={`Search ${activeTab}...`}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 bg-gray-50 border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                />
+              </div>
+              {activeTab === "users" && (
+                <button 
+                  onClick={() => openModal()}
+                  className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  <Plus size={16} /> <span className="hidden sm:inline">Add User</span>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Table Area */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
+                <tr>
+                  {activeTab === "users" ? (
+                    <>
+                      <th className="px-6 py-3 font-semibold">User Details</th>
+                      <th className="px-6 py-3 font-semibold">Academic</th>
+                      <th className="px-6 py-3 font-semibold">Role</th>
+                      <th className="px-6 py-3 font-semibold text-right">Actions</th>
+                    </>
+                  ) : (
+                    <>
+                      <th className="px-6 py-3 font-semibold">Club Name</th>
+                      <th className="px-6 py-3 font-semibold">Category</th>
+                      <th className="px-6 py-3 font-semibold">Credentials</th>
+                      <th className="px-6 py-3 font-semibold text-center">Members</th>
+                      <th className="px-6 py-3 font-semibold text-right">Actions</th>
+                    </>
+                  )}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filteredData.length === 0 ? (
+                    <tr>
+                        <td colSpan="5" className="px-6 py-12 text-center text-gray-400">
+                            No data found matching your search.
+                        </td>
+                    </tr>
+                ) : activeTab === "users" ? (
+                  filteredData.map((user) => (
+                    <tr key={user._id} className="hover:bg-gray-50/50 transition-colors group">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
+                             {user.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-900">{user.name}</div>
+                            <div className="text-gray-500 text-xs">{user.email}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-500">
+                        <div className="flex flex-col text-xs">
+                            <span className="font-medium">{user.q_id}</span>
+                            <span>{user.course} • {user.year} • {user.section}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <select 
+                            value={user.role} 
+                            onChange={(e) => handleRoleChange(user._id, e.target.value)}
+                            className={`text-xs border-0 bg-transparent font-medium cursor-pointer focus:ring-0 ${user.role === 'admin' ? 'text-purple-600' : 'text-blue-600'}`}
+                        >
+                            <option value="student">Student</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button 
+                            onClick={() => openModal(user)}
+                            className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded"
+                            title="Edit User"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteUser(user._id)}
+                            className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
+                            title="Delete User"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  filteredData.map((club) => (
+                    <tr key={club._id} className="hover:bg-gray-50/50 transition-colors group">
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-gray-900">{club.name}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge type={club.category}>{club.category}</Badge>
+                      </td>
+                      <td className="px-6 py-4 text-xs font-mono text-gray-500">
+                        {club.clubId}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 text-gray-600 text-xs">
+                            {club.members?.length || 0}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button 
+                                onClick={() => handleDeleteClub(club._id)}
+                                className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
+                                title="Delete Club"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* User Modal */}
+      {isUserModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 className="text-lg font-semibold text-gray-900">
+                    {editingUserId ? "Edit User Profile" : "Register New Student"}
+                </h3>
+                <button onClick={() => setIsUserModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                    <X size={20} />
+                </button>
+            </div>
+            
+            <form onSubmit={handleUserSubmit} className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="col-span-2 md:col-span-1">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Full Name</label>
+                        <input required className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
+                            value={userForm.name} onChange={e => setUserForm({...userForm, name: e.target.value})} />
+                    </div>
+                    <div className="col-span-2 md:col-span-1">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
+                        <input required type="email" className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
+                            value={userForm.email} onChange={e => setUserForm({...userForm, email: e.target.value})} />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Q-ID (Roll No)</label>
+                        <input required className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
+                            value={userForm.q_id} onChange={e => setUserForm({...userForm, q_id: e.target.value})} />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Phone</label>
+                        <input required className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
+                            value={userForm.phone} onChange={e => setUserForm({...userForm, phone: e.target.value})} />
+                    </div>
+                    
+                    <div className="col-span-2 border-t border-gray-100 my-2"></div>
+
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Course</label>
+                        <input required placeholder="e.g. B.Tech" className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
+                            value={userForm.course} onChange={e => setUserForm({...userForm, course: e.target.value})} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">Year</label>
+                            <input required placeholder="1" className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
+                                value={userForm.year} onChange={e => setUserForm({...userForm, year: e.target.value})} />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">Section</label>
+                            <input required placeholder="A" className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
+                                value={userForm.section} onChange={e => setUserForm({...userForm, section: e.target.value})} />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-8 flex justify-end gap-3">
+                    <button type="button" onClick={() => setIsUserModalOpen(false)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
+                    <button type="submit" disabled={savingUser} className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+                        {savingUser ? "Saving..." : editingUserId ? "Update User" : "Create User"}
+                    </button>
+                </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Admin;

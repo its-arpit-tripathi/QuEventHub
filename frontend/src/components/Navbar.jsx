@@ -18,6 +18,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [role, setRole] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   
   const navigate = useNavigate();
@@ -35,9 +36,21 @@ const Navbar = () => {
       try {
         const token = localStorage.getItem("token");
         setLoggedIn(!!token);
+        if (token) {
+          const rawUser = localStorage.getItem("user");
+          if (rawUser) {
+            const parsed = JSON.parse(rawUser);
+            setRole(parsed?.role || null);
+          } else {
+            setRole(null);
+          }
+        } else {
+          setRole(null);
+        }
       } catch (error) {
         console.error('Error checking auth in Navbar:', error);
         setLoggedIn(false);
+        setRole(null);
       }
     };
     checkAuth();
@@ -60,12 +73,12 @@ const Navbar = () => {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setLoggedIn(false);
+      setRole(null);
       setProfileOpen(false);
       setMobileMenuOpen(false);
       navigate("/login");
     } catch (error) {
       console.error('Error during logout:', error);
-      // Still navigate even if localStorage fails
       navigate("/login");
     }
   };
@@ -89,30 +102,38 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <NavLink to="/">Home</NavLink>
-            
-            {/* Events Dropdown */}
-            <FlyoutLink 
-              title="Events" 
-              items={[
-                { name: "Seminars", href: "/events?type=seminars" },
-                { name: "Workshops", href: "/events?type=workshops" },
-                { name: "Fests", href: "/events?type=fest" },
-                { name: "Sports", href: "/events?type=sports" },
-              ]}
-            />
+            {role === "admin" ? (
+              <>
+                <NavLink to="/admin">Admin Panel</NavLink>
+              </>
+            ) : (
+              <>
+                <NavLink to="/">Home</NavLink>
+                
+                {/* Events Dropdown */}
+                <FlyoutLink 
+                  title="Events" 
+                  items={[
+                    { name: "Seminars", href: "/events?type=seminars" },
+                    { name: "Workshops", href: "/events?type=workshops" },
+                    { name: "Fests", href: "/events?type=fest" },
+                    { name: "Sports", href: "/events?type=sports" },
+                  ]}
+                />
 
-            {/* Clubs Dropdown */}
-            <FlyoutLink 
-              title="Clubs" 
-              items={[
-                { name: "Technical", href: "/clubs?type=technical" },
-                { name: "Cultural", href: "/clubs?type=cultural" },
-                { name: "Arts", href: "/clubs?type=arts" },
-              ]}
-            />
+                {/* Clubs Dropdown */}
+                <FlyoutLink 
+                  title="Clubs" 
+                  items={[
+                    { name: "Technical", href: "/clubs?type=technical" },
+                    { name: "Cultural", href: "/clubs?type=cultural" },
+                    { name: "Arts", href: "/clubs?type=arts" },
+                  ]}
+                />
 
-            <NavLink to="/contact">Contact</NavLink>
+                <NavLink to="/contact">Contact</NavLink>
+              </>
+            )}
           </div>
 
           {/* Desktop Auth Buttons */}
@@ -143,9 +164,15 @@ const Navbar = () => {
                       exit={{ opacity: 0, y: 15 }}
                       className="absolute right-0 mt-3 w-48 bg-white rounded-xl shadow-xl py-2 overflow-hidden text-gray-800"
                     >
-                      <Link to="/profile" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
-                        <User size={16} /> Profile
-                      </Link>
+                      {role === "admin" ? (
+                        <Link to="/admin" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
+                          <User size={16} /> Admin Panel
+                        </Link>
+                      ) : (
+                        <Link to="/profile" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
+                          <User size={16} /> Profile
+                        </Link>
+                      )}
                       <button 
                         onClick={handleLogout}
                         className="w-full text-left flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 transition"

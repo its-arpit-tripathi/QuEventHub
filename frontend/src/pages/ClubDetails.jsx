@@ -19,15 +19,15 @@ const ClubDetails = () => {
   const fetchClub = async () => {
     setLoading(true);
     setError("");
-    try {
-      const res = await api.get(`/clubs/${id}`);
+      try {
+        const res = await api.get(`/clubs/${id}`);
       setClub(res.data.data || res.data);
-    } catch (err) {
-      console.error(err);
+      } catch (err) {
+        console.error(err);
       setError("Unable to load club information. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
+      } finally {
+        setLoading(false);
+      }
   };
 
   const handleJoin = async () => {

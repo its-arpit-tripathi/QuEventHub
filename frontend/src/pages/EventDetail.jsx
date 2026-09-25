@@ -34,11 +34,11 @@ export default function EventDetail() {
 
   const handleRegistration = async () => {
     if (!localStorage.getItem("token")) {
-      alert("You must log in to register for an event.");
+        alert("You must log in to register for an event.");
       navigate("/login", { state: { from: window.location.pathname } });
-      return;
+        return;
     }
-
+    
     setRegStatus((prev) => ({
       ...prev,
       state: "pending",
@@ -52,7 +52,7 @@ export default function EventDetail() {
       }
 
       const res = await api.post("/events/register", payload);
-
+      
       if (res.data.requiresPayment) {
         setRegStatus({
           state: "requiredPayment",
@@ -107,24 +107,24 @@ export default function EventDetail() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="space-y-3">
-          <div className="flex items-center gap-3 text-gray-700">
+            <div className="flex items-center gap-3 text-gray-700">
             <Calendar size={20} className="text-blue-500" />
-            <span className="font-semibold">Date:</span> {new Date(event.date).toDateString()}
-          </div>
-          <div className="flex items-center gap-3 text-gray-700">
+                <span className="font-semibold">Date:</span> {new Date(event.date).toDateString()}
+            </div>
+            <div className="flex items-center gap-3 text-gray-700">
             <Clock size={20} className="text-blue-500" />
             <span className="font-semibold">Time:</span> {event.time || "TBD"}
-          </div>
-          <div className="flex items-center gap-3 text-gray-700">
+            </div>
+            <div className="flex items-center gap-3 text-gray-700">
             <MapPin size={20} className="text-blue-500" />
             <span className="font-semibold">Venue:</span> {event.venue || "TBD"}
-          </div>
-          <div className="flex items-center gap-3 text-gray-700">
+            </div>
+            <div className="flex items-center gap-3 text-gray-700">
             <DollarSign size={20} className="text-blue-500" />
             <span className="font-semibold">Price:</span> {isPaid ? `₹${event.price}` : "Free"}
-          </div>
+            </div>
         </div>
-
+        
         {imageSrc && (
           <img
             src={imageSrc}
@@ -138,20 +138,20 @@ export default function EventDetail() {
       <p className="text-gray-700 leading-relaxed mb-8">{event.description}</p>
 
       <div className="mt-8 p-4 border-2 border-blue-200 rounded-lg bg-blue-50">
-        <h3 className="text-xl font-bold mb-3 text-blue-700">Registration Status</h3>
-
+          <h3 className="text-xl font-bold mb-3 text-blue-700">Registration Status</h3>
+          
         {regStatus.state === "error" && (
-          <p className="p-2 mb-3 rounded bg-red-100 text-red-600 font-medium">{regStatus.message}</p>
-        )}
+             <p className="p-2 mb-3 rounded bg-red-100 text-red-600 font-medium">{regStatus.message}</p>
+          )}
 
-        {isRegistered ? (
+          {isRegistered ? (
           <div className="flex items-center text-green-600 font-bold text-lg p-3 bg-green-100 rounded-lg">
             <CheckCircle size={24} className="mr-2" /> {regStatus.message}
           </div>
-        ) : (
-          <>
+          ) : (
+              <>
             {isPaid && (
-              <div className="p-4 bg-yellow-50 rounded-lg mb-4 border border-yellow-300">
+                    <div className="p-4 bg-yellow-50 rounded-lg mb-4 border border-yellow-300">
                 <p className="font-semibold text-orange-700 mb-3">
                   {regStatus.state === "requiredPayment"
                     ? regStatus.message
@@ -165,21 +165,21 @@ export default function EventDetail() {
                   />
                 )}
                 <p className="text-sm mb-3">Amount: ₹{regStatus.amount || event.price || 0}</p>
-                <input
-                  type="text"
-                  placeholder="Enter Transaction ID after payment"
-                  value={transactionId}
-                  onChange={(e) => setTransactionId(e.target.value)}
-                  className="w-full p-2 border rounded mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-            )}
-
-            <button
-              onClick={handleRegistration}
+                        <input 
+                            type="text"
+                            placeholder="Enter Transaction ID after payment"
+                            value={transactionId}
+                            onChange={(e) => setTransactionId(e.target.value)}
+                            className="w-full p-2 border rounded mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                    </div>
+                )}
+                
+                <button 
+                    onClick={handleRegistration}
               disabled={regStatus.state === "pending"}
               className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition flex justify-center items-center disabled:opacity-60"
-            >
+                >
               {regStatus.state === "pending" ? (
                 <>
                   <Loader2 size={24} className="animate-spin mr-2" /> Submitting...
@@ -189,9 +189,9 @@ export default function EventDetail() {
               ) : (
                 "One-Click Register"
               )}
-            </button>
-          </>
-        )}
+                </button>
+            </>
+          )}
       </div>
     </div>
   );

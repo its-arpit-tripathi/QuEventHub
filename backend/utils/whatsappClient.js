@@ -1,70 +1,49 @@
 import pkg from 'whatsapp-web.js';
 const { Client, LocalAuth } = pkg;
 import qrcode from 'qrcode-terminal';
-import { existsSync } from 'fs';
+
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Common Chrome/Chromium paths on Windows
-const chromePaths = [
-    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-    process.env.CHROME_PATH,
-    process.env.CHROMIUM_PATH
-].filter(Boolean);
+// ----- FIXED CHROME PATH -----
+const chromeExecutablePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 
-// Find the first existing Chrome executable
-let chromeExecutablePath = null;
-for (const path of chromePaths) {
-    if (path && existsSync(path)) {
-        chromeExecutablePath = path;
-        break;
-    }
-}
-
-// Puppeteer configuration
+// ----- FIXED PUPPETEER CONFIG -----
 const puppeteerConfig = {
-    headless: true,
+    headless: false,   // WhatsApp Web does NOT work reliably in headless
+    executablePath: chromeExecutablePath,
     args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
         '--no-first-run',
-        '--no-zygote',
-        '--single-process',
-        '--disable-gpu'
+        '--no-zygote'
     ]
 };
 
-// Only set executablePath if we found Chrome
-if (chromeExecutablePath) {
-    puppeteerConfig.executablePath = chromeExecutablePath;
-    console.log(`[WhatsApp] Using Chrome at: ${chromeExecutablePath}`);
-} else {
-    console.warn('[WhatsApp] Chrome executable not found. Puppeteer will try to use bundled Chromium.');
-    console.warn('[WhatsApp] If this fails, install Chrome or set CHROME_PATH environment variable.');
-}
+console.log(`[WhatsApp] Using Chrome at: ${chromeExecutablePath}`);
 
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: puppeteerConfig
 });
 
+// -------- QR CODE --------
 client.on('qr', (qr) => {
-    console.log('\n[WhatsApp] Scan this QR code with your WhatsApp to log in:');
+    console.log('\n[WhatsApp] Scan this QR code with your WhatsApp:');
     qrcode.generate(qr, { small: true });
+});
+
+// -------- EVENTS --------
+client.on('authenticated', () => {
+    console.log('✅ [WhatsApp] Authentication successful!');
 });
 
 client.on('ready', () => {
     console.log('✅ [WhatsApp] Client is Ready!');
-});
-
-client.on('authenticated', () => {
-    console.log('✅ [WhatsApp] Authentication successful!');
 });
 
 client.on('auth_failure', (msg) => {
@@ -75,18 +54,13 @@ client.on('disconnected', (reason) => {
     console.log('⚠️ [WhatsApp] Client disconnected:', reason);
 });
 
-// Initialize with error handling
-try {
-    client.initialize().catch((error) => {
-        console.error('❌ [WhatsApp] Failed to initialize:', error.message);
-        console.error('[WhatsApp] This might be due to:');
-        console.error('  1. Chrome/Chromium not installed');
-        console.error('  2. Missing dependencies');
-        console.error('  3. Network issues');
-        console.error('[WhatsApp] WhatsApp features will be disabled until this is resolved.');
-    });
-} catch (error) {
-    console.error('❌ [WhatsApp] Error during initialization:', error.message);
-}
+// -------- INITIALIZE --------
+client.initialize().catch((error) => {
+    console.error('❌ [WhatsApp] Failed to initialize:', error.message);
+    console.error('[WhatsApp] Possible reasons:');
+    console.error('  1. Chrome not found');
+    console.error('  2. Broken Puppeteer install');
+    console.error('  3. Network blocked');
+});
 
 export default client;
