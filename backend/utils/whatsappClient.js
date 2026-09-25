@@ -37,10 +37,38 @@ const client = new Client({
     puppeteer: puppeteerConfig
 });
 
-// -------- QR CODE --------
-client.on('qr', (qr) => {
-    console.log('\n[WhatsApp] Scan this QR code with your WhatsApp:');
-    qrcode.generate(qr, { small: true });
+// -------- QR CODE & PAIRING CODE --------
+client.on('qr', async (qr) => {
+    console.log('\n[WhatsApp] QR Code generated.');
+    
+    const phoneNumber = process.env.WA_PHONE_NUMBER;
+    
+    if (phoneNumber) {
+        console.log(`[WhatsApp] Requesting pairing code for ${phoneNumber}...`);
+        try {
+            // Give the client a brief moment to be fully ready for pairing code request
+            setTimeout(async () => {
+                try {
+                    const pairingCode = await client.requestPairingCode(phoneNumber);
+                    console.log('\n=============================================');
+                    console.log(`📲 [WhatsApp] PAIRING CODE: ${pairingCode}`);
+                    console.log('=============================================');
+                    console.log('Enter this code on your phone: WhatsApp -> Linked Devices -> Link with phone number instead.\n');
+                } catch (err) {
+                    console.error('❌ [WhatsApp] Failed to get pairing code:', err.message);
+                    console.log('[WhatsApp] Falling back to QR Code:');
+                    qrcode.generate(qr, { small: true });
+                }
+            }, 3000);
+        } catch (err) {
+            console.error('❌ [WhatsApp] Error:', err.message);
+        }
+    } else {
+        console.log('⚠️ [WhatsApp] No WA_PHONE_NUMBER provided in .env');
+        console.log('⚠️ Please add WA_PHONE_NUMBER (e.g. 919876543210 - with country code, no + or spaces) to use Pairing Code instead of QR.');
+        console.log('\n[WhatsApp] Fallback: Scan this QR code with your WhatsApp:');
+        qrcode.generate(qr, { small: true });
+    }
 });
 
 // -------- EVENTS --------
