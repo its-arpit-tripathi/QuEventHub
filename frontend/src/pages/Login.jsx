@@ -17,16 +17,37 @@ export default function Login() {
       label: "Student",
       identifier: import.meta.env.VITE_DEMO_STUDENT_IDENTIFIER || "student@example.com",
       password: import.meta.env.VITE_DEMO_STUDENT_PASSWORD || "Student@123",
+      theme: "border-blue-200 bg-blue-50 text-blue-700 hover:border-blue-300 hover:bg-blue-100 focus:ring-blue-500"
     },
     {
       label: "Admin",
       identifier: import.meta.env.VITE_DEMO_ADMIN_IDENTIFIER || "admin@example.com",
       password: import.meta.env.VITE_DEMO_ADMIN_PASSWORD || "Admin@123",
+      theme: "border-purple-200 bg-purple-50 text-purple-700 hover:border-purple-300 hover:bg-purple-100 focus:ring-purple-500"
     },
     {
-      label: "Club",
-      identifier: import.meta.env.VITE_DEMO_CLUB_IDENTIFIER || "CLBTEST1",
-      password: import.meta.env.VITE_DEMO_CLUB_PASSWORD || "Club@123",
+      label: "Tech Club",
+      identifier: "CLBTECH1",
+      password: "Club@123",
+      theme: "border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-300 hover:bg-emerald-100 focus:ring-emerald-500"
+    },
+    {
+      label: "Culture Club",
+      identifier: "CLBCULT1",
+      password: "Club@123",
+      theme: "border-pink-200 bg-pink-50 text-pink-700 hover:border-pink-300 hover:bg-pink-100 focus:ring-pink-500"
+    },
+    {
+      label: "Sports Club",
+      identifier: "CLBSPRT1",
+      password: "Club@123",
+      theme: "border-orange-200 bg-orange-50 text-orange-700 hover:border-orange-300 hover:bg-orange-100 focus:ring-orange-500"
+    },
+    {
+      label: "Music Club",
+      identifier: "CLBMUS1",
+      password: "Club@123",
+      theme: "border-teal-200 bg-teal-50 text-teal-700 hover:border-teal-300 hover:bg-teal-100 focus:ring-teal-500"
     },
   ];
 
@@ -128,13 +149,7 @@ export default function Login() {
                   type="button"
                   disabled={loading}
                   onClick={() => handleLogin(account)}
-                  className={`rounded-xl border-2 py-2.5 text-sm font-bold shadow-sm transition focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-                    account.label === 'Student' 
-                      ? 'border-blue-200 bg-blue-50 text-blue-700 hover:border-blue-300 hover:bg-blue-100 focus:ring-blue-500' 
-                      : account.label === 'Admin' 
-                      ? 'border-purple-200 bg-purple-50 text-purple-700 hover:border-purple-300 hover:bg-purple-100 focus:ring-purple-500' 
-                      : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-300 hover:bg-emerald-100 focus:ring-emerald-500'
-                  }`}
+                  className={`rounded-xl border-2 py-2.5 text-sm font-bold shadow-sm transition focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${account.theme}`}
                 >
                   {account.label}
                 </button>
