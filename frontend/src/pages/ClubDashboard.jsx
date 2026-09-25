@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
+import { showToast } from "../utils/toast";
 import { 
   Loader2, 
   Calendar, 
@@ -135,7 +136,7 @@ const ClubDashboard = () => {
       setRegistrations(prev => prev.map(r => r._id === regId ? { ...r, attended: true } : r));
     } catch (e) {
       console.error(e);
-      alert(e.response?.data?.message || "Could not mark attendance");
+      showToast(e.response?.data?.message || "Could not mark attendance", "error");
     }
   };
 

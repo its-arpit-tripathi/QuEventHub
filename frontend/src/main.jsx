@@ -17,20 +17,18 @@
 
 
 
-// src/main.jsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import "./index.css";
 
-// Error handler for unhandled errors
-window.addEventListener('error', (event) => {
-  console.error('Unhandled error:', event.error);
+window.addEventListener("error", (event) => {
+  console.error("Unhandled error:", event.error);
 });
 
-window.addEventListener('unhandledrejection', (event) => {
-  console.error('Unhandled promise rejection:', event.reason);
+window.addEventListener("unhandledrejection", (event) => {
+  console.error("Unhandled promise rejection:", event.reason);
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

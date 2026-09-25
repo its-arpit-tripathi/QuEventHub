@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
+import { showToast } from "../utils/toast";
 
 
 const Icons = {
@@ -73,9 +74,7 @@ const AdminClubs = () => {
         const res = await api.post("/clubs", form);
         const creds = res.data?.data?.credentials;
         if (creds) {
-          alert(
-            `Club created!\n\nClub ID: ${creds.clubId}\nPassword: ${creds.password}\n\nPlease share these credentials securely with the club.`
-          );
+          showToast(`Club created. ID: ${creds.clubId} | Password: ${creds.password}`, "success");
         }
       }
       resetForm();

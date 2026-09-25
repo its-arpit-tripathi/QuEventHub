@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api";
-import { Loader2, Calendar, MapPin, Clock, Users } from "lucide-react";
+import { showToast } from "../utils/toast";
+import { Loader2, Calendar, MapPin, Clock, Users, Check } from "lucide-react";
 
 const ClubDetails = () => {
   const { id } = useParams();
@@ -32,18 +33,18 @@ const ClubDetails = () => {
 
   const handleJoin = async () => {
     if (!localStorage.getItem("token")) {
-      alert("Please login to join.");
+      showToast("Please login to join.", "info");
       navigate("/login", { state: { from: `/clubs/${id}` } });
       return;
     }
     try {
       setJoining(true);
       const res = await api.post(`/clubs/${id}/join`);
-      alert(res.data.message || "Joined club");
+      showToast(res.data.message || "Joined club", "success");
       fetchClub();
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Could not join club");
+      showToast(err.response?.data?.message || "Could not join club", "error");
     } finally {
       setJoining(false);
     }
@@ -62,6 +63,12 @@ const ClubDetails = () => {
   }
 
   const imageSrc = club.imageUrl || club.image?.path;
+  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  const userId = currentUser?.id || currentUser?._id;
+  const joined = Boolean(userId && club.members?.some((member) => {
+    const memberId = typeof member === "object" ? member._id || member.id : member;
+    return String(memberId) === String(userId);
+  }));
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow">
@@ -101,11 +108,16 @@ const ClubDetails = () => {
       <div className="flex gap-4 flex-wrap">
         <button
           onClick={handleJoin}
-          disabled={joining}
-          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition flex items-center gap-2 disabled:opacity-60"
+          disabled={joining || joined}
+          className={`flex items-center gap-2 rounded px-4 py-2 transition disabled:cursor-not-allowed ${
+            joined
+              ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-60"
+          }`}
         >
           {joining && <Loader2 size={18} className="animate-spin" />}
-          Join Club
+          {joined && <Check size={18} />}
+          {joined ? "Joined" : "Join Club"}
         </button>
 
         <button

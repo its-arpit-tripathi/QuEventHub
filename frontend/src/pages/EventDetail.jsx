@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api";
+import { showToast } from "../utils/toast";
 import { Loader2, Calendar, Clock, MapPin, DollarSign, CheckCircle } from "lucide-react";
 
 const initialStatus = { state: "idle", message: "", amount: null, qrCodeUrl: null };
@@ -34,7 +35,7 @@ export default function EventDetail() {
 
   const handleRegistration = async () => {
     if (!localStorage.getItem("token")) {
-        alert("You must log in to register for an event.");
+        showToast("You must log in to register for an event.", "info");
       navigate("/login", { state: { from: window.location.pathname } });
         return;
     }

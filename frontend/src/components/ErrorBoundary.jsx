@@ -1,6 +1,5 @@
 import React from 'react';
 import { AlertCircle, RefreshCw, Home } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -8,7 +7,7 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
@@ -36,7 +35,7 @@ class ErrorBoundary extends React.Component {
               We're sorry, but something unexpected happened. Please try refreshing the page.
             </p>
             
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details className="mb-6 text-left bg-gray-100 p-4 rounded text-sm">
                 <summary className="font-semibold cursor-pointer mb-2">Error Details (Dev Mode)</summary>
                 <pre className="overflow-auto text-xs">

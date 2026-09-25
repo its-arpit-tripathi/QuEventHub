@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink as RouterNavLink, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { 
   Menu, 
@@ -11,7 +10,7 @@ import {
   Calendar, 
   Users, 
   Home, 
-  Phone 
+  Phone
 } from "lucide-react";
 
 const Navbar = () => {
@@ -97,7 +96,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="text-2xl font-bold text-white tracking-wide flex items-center gap-2">
             <span className="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm">Q</span>
-            CampusHub
+            QuEventHub
           </Link>
 
           {/* Desktop Navigation */}
@@ -190,6 +189,8 @@ const Navbar = () => {
           <button 
             className="md:hidden text-white"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
@@ -250,9 +251,12 @@ const Navbar = () => {
 /* --- Helper Components --- */
 
 const NavLink = ({ to, children }) => (
-  <Link to={to} className="text-gray-300 hover:text-white font-medium transition-colors">
+  <RouterNavLink
+    to={to}
+    className={({ isActive }) => `font-medium transition-colors ${isActive ? "text-white" : "text-gray-300 hover:text-white"}`}
+  >
     {children}
-  </Link>
+  </RouterNavLink>
 );
 
 const MobileNavLink = ({ to, children, onClick, icon }) => (

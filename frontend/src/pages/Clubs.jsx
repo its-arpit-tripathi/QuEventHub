@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../api";
+import { showToast } from "../utils/toast";
 import { 
   Loader2, 
   Calendar, 
@@ -9,7 +10,8 @@ import {
   Search, 
   Users, 
   ArrowRight,
-  Filter
+  Filter,
+  Check
 } from "lucide-react";
 
 const categoryFilters = ["all", "technical", "cultural", "sports", "arts", "music"];
@@ -19,12 +21,20 @@ const Clubs = () => {
   const [filteredClubs, setFilteredClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [joinLoadingId, setJoinLoadingId] = useState(null);
-  const [feedback, setFeedback] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
   const navigate = useNavigate();
   const { search } = useLocation();
   const category = new URLSearchParams(search).get("type") || "all";
+  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+
+  const hasJoinedClub = (club) => {
+    const userId = currentUser?.id || currentUser?._id;
+    return Boolean(userId && club.members?.some((member) => {
+      const memberId = typeof member === "object" ? member._id || member.id : member;
+      return String(memberId) === String(userId);
+    }));
+  };
 
   // Initial Fetch
   useEffect(() => {
@@ -56,7 +66,6 @@ const Clubs = () => {
 
   const fetchClubs = async () => {
     setLoading(true);
-    setFeedback("");
     try {
       const res = await api.get("/clubs");
       const fetchedClubs = res.data.data || res.data || [];
@@ -64,7 +73,7 @@ const Clubs = () => {
       setFilteredClubs(fetchedClubs);
     } catch (error) {
       console.error("Error fetching clubs:", error);
-      setFeedback("Unable to load clubs right now. Please try again later.");
+      showToast("Unable to load clubs right now. Please try again later.", "error");
     } finally {
       setLoading(false);
     }
@@ -75,7 +84,7 @@ const Clubs = () => {
     e.stopPropagation();
 
     if (!localStorage.getItem("token")) {
-      alert("Please login to join a club.");
+      showToast("Please login to join a club.", "info");
       navigate("/login", { state: { from: `/clubs/${clubId}` } });
       return;
     }
@@ -83,19 +92,16 @@ const Clubs = () => {
     try {
       setJoinLoadingId(clubId);
       const res = await api.post(`/clubs/${clubId}/join`);
-      setFeedback(res.data.message || "Joined club successfully!");
+      showToast(res.data.message || "Joined club successfully!", "success");
       // Optional: Refetch to update member counts if your API returns that
       fetchClubs();
-      
-      // Clear feedback after 3 seconds
-      setTimeout(() => setFeedback(""), 3000);
     } catch (error) {
       const status = error.response?.status;
       const message = error.response?.data?.message || "Could not join club.";
       if (status === 401) {
         navigate("/login", { state: { from: `/clubs/${clubId}` } });
       } else {
-        setFeedback(message);
+        showToast(message, "info");
       }
     } finally {
       setJoinLoadingId(null);
@@ -114,13 +120,6 @@ const Clubs = () => {
           Find your tribe. Join a community that shares your passion, from coding to creativity.
         </p>
       </div>
-
-      {/* Global Feedback Toast (if any) */}
-      {feedback && (
-        <div className="fixed top-24 right-5 z-50 bg-purple-600 text-white px-6 py-3 rounded-lg shadow-xl animate-fade-in-down">
-          {feedback}
-        </div>
-      )}
 
       {/* Search and Filter Section */}
       <div className="max-w-7xl mx-auto mb-12 space-y-6">
@@ -184,6 +183,7 @@ const Clubs = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredClubs.map((club) => {
               const imageSrc = club.imageUrl || club.image?.path;
+              const joined = hasJoinedClub(club);
               
               return (
                 <div
@@ -248,11 +248,19 @@ const Clubs = () => {
                       
                       <button
                         onClick={(e) => handleJoinClub(e, club._id)}
-                        disabled={joinLoadingId === club._id}
-                        className="flex items-center justify-center w-full py-2.5 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-all shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                        disabled={joined || joinLoadingId === club._id}
+                        className={`flex items-center justify-center w-full rounded-lg py-2.5 font-medium transition-all disabled:cursor-not-allowed ${
+                          joined
+                            ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                            : "bg-purple-600 text-white shadow-md hover:bg-purple-700 hover:shadow-lg disabled:opacity-70"
+                        }`}
                       >
                         {joinLoadingId === club._id ? (
                           <Loader2 size={18} className="animate-spin" />
+                        ) : joined ? (
+                          <>
+                            <Check size={17} className="mr-1" /> Joined
+                          </>
                         ) : (
                           <>
                             Join <ArrowRight size={16} className="ml-1" />

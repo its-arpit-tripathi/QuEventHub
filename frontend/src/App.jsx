@@ -1,58 +1,3 @@
-// // App.jsx
-// import React from "react";
-// import { Routes, Route } from "react-router-dom";
-
-// import Navbar from "./components/Navbar";
-// import Footer from "./components/Footer";
-
-// import Home from "./pages/Home";
-// import Events from "./pages/Events";
-// import EventDetail from "./pages/EventDetail"; // NEW
-// import Clubs from "./pages/Clubs";
-// import Contact from "./pages/Contact";
-// import Login from "./pages/Login";
-// import Register from "./pages/Register"; // NEW
-// import Admin from "./pages/Admin";
-// import ProtectedRoute from "./components/ProtectedRoute";
-
-// export default function App() {
-//   return (
-//     <>
-//       {/* NAVBAR ALWAYS VISIBLE */}
-//       <Navbar />
-
-//       {/* PAGES */}
-//       <div className="min-h-screen">
-//         <Routes>
-//           <Route path="/" element={<Home />} />
-//           <Route path="/events" element={<Events />} />
-//           <Route path="/events/:id" element={<EventDetail />} /> {/* NEW: Event Detail */}
-//           <Route path="/clubs" element={<Clubs />} />
-//           <Route path="/contact" element={<Contact />} />
-//           <Route path="/login" element={<Login />} />
-//           <Route path="/register" element={<Register />} /> {/* NEW: Registration */}
-
-//           <Route
-//             path="/admin"
-//             element={
-//               <ProtectedRoute>
-//                 <Admin />
-//               </ProtectedRoute>
-//             }
-//           />
-//         </Routes>
-//       </div>
-
-//       {/* FOOTER ALWAYS VISIBLE */}
-//       <Footer />
-//     </>
-//   );
-// }
-
-
-
-
-// src/App.jsx
 import React, { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Loader2 } from "lucide-react";
@@ -61,6 +6,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
+import Toast from "./components/Toast";
 
 import Home from "./pages/Home";
 import Events from "./pages/Events";
@@ -90,9 +36,10 @@ export default function App() {
       <ErrorBoundary>
         <Navbar />
       </ErrorBoundary>
+      <Toast />
 
       {/* PAGES */}
-      <div className="min-h-screen">
+      <main className="min-h-screen pt-20">
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -139,9 +86,8 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-      </div>
+      </main>
 
-      {/* FOOTER ALWAYS VISIBLE */}
       <ErrorBoundary>
         <Footer />
       </ErrorBoundary>

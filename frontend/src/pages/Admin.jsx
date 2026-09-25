@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+import { showToast } from "../utils/toast";
 import { 
   Loader2, 
   Users, 
@@ -120,7 +121,7 @@ const Admin = () => {
       setIsUserModalOpen(false);
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Failed to save user");
+      showToast(err.response?.data?.message || "Failed to save user", "error");
     } finally {
       setSavingUser(false);
     }
@@ -131,8 +132,8 @@ const Admin = () => {
     try {
       await api.delete(`/admin/users/${id}`);
       setUsers((prev) => prev.filter((x) => x._id !== id));
-    } catch (error) {
-      alert("Failed to delete user");
+    } catch {
+      showToast("Failed to delete user", "error");
     }
   };
 
@@ -141,8 +142,8 @@ const Admin = () => {
     try {
       await api.delete(`/clubs/${id}`);
       setClubs((prev) => prev.filter((x) => x._id !== id));
-    } catch (err) {
-      alert("Failed to delete club");
+    } catch {
+      showToast("Failed to delete club", "error");
     }
   };
 
@@ -151,8 +152,8 @@ const Admin = () => {
       const res = await api.put(`/admin/users/${userId}`, { role: newRole });
       const updated = res.data.data;
       setUsers((prev) => prev.map((x) => (x._id === userId ? updated : x)));
-    } catch (err) {
-      alert("Failed to update role");
+    } catch {
+      showToast("Failed to update role", "error");
     }
   };
 
