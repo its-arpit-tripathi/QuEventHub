@@ -144,13 +144,20 @@ const AdminClubs = () => {
   const labelClasses = "block mb-1 text-xs font-medium text-gray-600 uppercase tracking-wide";
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 pt-24">
+    <div className="min-h-screen bg-slate-50 p-4 pt-24 sm:p-6 sm:pt-24">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+        <div className="mb-7 rounded-2xl bg-gradient-to-br from-[#102a43] via-[#312e81] to-[#7c3aed] p-6 text-white shadow-xl sm:p-8">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Manage Clubs</h2>
-            <p className="text-gray-500 mt-1">Add, edit, or remove student clubs.</p>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-violet-200">Admin workspace</p>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Build the campus community.</h2>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-violet-100">Create clubs, keep their details current, and make every community easy to discover.</p>
           </div>
+        </div>
+
+        <div className="mb-7 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-sm text-slate-500">Total clubs</p><p className="mt-1 text-3xl font-bold text-slate-900">{clubs.length}</p></div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-sm text-slate-500">Active members</p><p className="mt-1 text-3xl font-bold text-slate-900">{clubs.reduce((total, club) => total + (club.members?.length || 0), 0)}</p></div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-sm text-slate-500">Action</p><p className="mt-1 text-lg font-bold text-violet-600">Add a new club below</p></div>
         </div>
 
         {error && (
@@ -159,11 +166,12 @@ const AdminClubs = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* LEFT COLUMN: FORM */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-24">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
+            <div className="sticky top-24 rounded-2xl border border-violet-100 bg-white p-6 shadow-xl shadow-violet-900/5">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-600">Club builder</p>
+              <h3 className="mb-5 mt-1 border-b border-slate-100 pb-4 text-xl font-bold text-slate-900">
                 {form._id ? "Edit Club" : "Add New Club"}
               </h3>
               
@@ -277,22 +285,24 @@ const AdminClubs = () => {
                     <p className="text-gray-400 text-sm">Create one using the form.</p>
                 </div>
             ) : (
-              <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 {clubs.map((c) => (
                   <div
                     key={c._id}
-                    className="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200 flex flex-col"
+                    className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow duration-200 hover:shadow-xl"
                   >
-                    <div className="relative h-40 bg-gray-100 overflow-hidden">
+                    <div className="relative h-36 overflow-hidden bg-slate-100">
                       {c.imageUrl ? (
                         <img 
                           src={c.imageUrl} 
                           alt={c.name} 
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300">
-                            <span className="text-4xl">🏆</span>
+                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-600 via-fuchsia-500 to-pink-500 text-white/80">
+                          <span className="text-4xl">✦</span>
                         </div>
                       )}
                       <div className="absolute top-3 left-3">
@@ -302,7 +312,7 @@ const AdminClubs = () => {
                       </div>
                     </div>
                     
-                    <div className="p-5 flex-1 flex flex-col">
+                    <div className="flex flex-1 flex-col p-5">
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="text-lg font-bold text-gray-900 line-clamp-1">{c.name}</h4>
                       </div>

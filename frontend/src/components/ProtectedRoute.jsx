@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, allowedRoles }) => {
     const [isChecking, setIsChecking] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -32,6 +32,13 @@ const ProtectedRoute = ({ children }) => {
     // Redirect to login if not authenticated
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
+    }
+
+    if (allowedRoles?.length) {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        if (!allowedRoles.includes(user?.role)) {
+            return <Navigate to={user?.role === 'admin' ? '/admin' : user?.role === 'club' ? '/club' : '/dashboard'} replace />;
+        }
     }
 
     // Render the protected component if authenticated

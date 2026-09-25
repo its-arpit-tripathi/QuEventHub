@@ -13,6 +13,15 @@ import {
 
 const categories = ["All", "Technical", "Cultural", "Sports", "Workshop", "Seminar", "Fest"];
 
+const eventFallbackColors = {
+    Technical: "from-blue-600 via-cyan-500 to-teal-400",
+    Cultural: "from-fuchsia-600 via-pink-500 to-rose-400",
+    Sports: "from-orange-500 via-amber-500 to-yellow-400",
+    Workshop: "from-violet-600 via-indigo-500 to-blue-400",
+    Seminar: "from-slate-700 via-slate-600 to-slate-400",
+    Fest: "from-emerald-600 via-teal-500 to-cyan-400",
+};
+
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -170,10 +179,12 @@ const Events = () => {
                                     <img 
                                         src={event.imageUrl || event.image?.path} 
                                         alt={event.title} 
+                                        loading="lazy"
+                                        decoding="async"
                                         className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                                     />
                                 ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                                    <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${eventFallbackColors[event.category] || "from-blue-600 to-indigo-600"}`}>
                                         <CalendarDays className="text-white/30 w-16 h-16" />
                                     </div>
                                 )}

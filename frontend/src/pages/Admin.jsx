@@ -177,26 +177,31 @@ const Admin = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50/50 p-6 pt-24">
+    <div className="min-h-screen bg-slate-50 p-4 pt-24 sm:p-6 sm:pt-24">
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Header Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4">
+        <div className="rounded-2xl bg-gradient-to-br from-[#102a43] via-[#1e3a8a] to-[#2563eb] p-6 text-white shadow-xl sm:p-8">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-blue-200">Admin workspace</p>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Keep QuEventHub moving.</h1>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-blue-100">Review users, manage clubs, and keep the campus calendar healthy.</p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="p-3 bg-blue-50 text-blue-600 rounded-lg"><Users size={24} /></div>
                 <div>
                     <p className="text-sm text-gray-500 font-medium">Total Users</p>
                     <h3 className="text-2xl font-bold text-gray-900">{users.length}</h3>
                 </div>
             </div>
-            <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4">
+            <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg"><Tent size={24} /></div>
                 <div>
                     <p className="text-sm text-gray-500 font-medium">Total Clubs</p>
                     <h3 className="text-2xl font-bold text-gray-900">{clubs.length}</h3>
                 </div>
             </div>
-            <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+            <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                <div>
                  <p className="text-sm text-gray-500 font-medium">Quick Actions</p>
                  <button onClick={() => navigate("/admin/clubs")} className="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium hover:underline">
@@ -211,7 +216,7 @@ const Admin = () => {
         )}
 
         {/* Main Content */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5">
           
           {/* Toolbar */}
           <div className="p-5 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">

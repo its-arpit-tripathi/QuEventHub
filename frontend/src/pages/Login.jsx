@@ -55,7 +55,7 @@ export default function Login() {
 
       // Role-based Navigation 
       const role = res.data.user.role;
-      const destination = role === "admin" ? "/admin" : role === "club" ? "/club" : "/";
+      const destination = role === "admin" ? "/admin" : role === "club" ? "/club" : "/dashboard";
       navigate(destination);
 
     } catch (err) {

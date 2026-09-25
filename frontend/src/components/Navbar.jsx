@@ -13,6 +13,8 @@ import {
   Phone
 } from "lucide-react";
 
+const MotionDiv = motion.div;
+
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -103,10 +105,18 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-8">
             {role === "admin" ? (
               <>
-                <NavLink to="/admin">Admin Panel</NavLink>
+                <NavLink to="/admin">Admin Overview</NavLink>
+                <NavLink to="/admin/clubs">Manage Clubs</NavLink>
+              </>
+            ) : role === "club" ? (
+              <>
+                <NavLink to="/club">Club Dashboard</NavLink>
+                <NavLink to="/events">Public Events</NavLink>
+                <NavLink to="/clubs">Campus Clubs</NavLink>
               </>
             ) : (
               <>
+                <NavLink to="/dashboard">Student Dashboard</NavLink>
                 <NavLink to="/">Home</NavLink>
                 
                 {/* Events Dropdown */}
@@ -157,7 +167,7 @@ const Navbar = () => {
 
                 <AnimatePresence>
                   {profileOpen && (
-                    <motion.div
+                    <MotionDiv
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 15 }}
@@ -167,10 +177,19 @@ const Navbar = () => {
                         <Link to="/admin" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
                           <User size={16} /> Admin Panel
                         </Link>
-                      ) : (
-                        <Link to="/profile" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
-                          <User size={16} /> Profile
+                      ) : role === "club" ? (
+                        <Link to="/club" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
+                          <Calendar size={16} /> Club Dashboard
                         </Link>
+                      ) : (
+                        <>
+                          <Link to="/dashboard" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
+                            <Home size={16} /> Student Dashboard
+                          </Link>
+                          <Link to="/profile" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
+                            <User size={16} /> Profile
+                          </Link>
+                        </>
                       )}
                       <button 
                         onClick={handleLogout}
@@ -178,7 +197,7 @@ const Navbar = () => {
                       >
                         <LogOut size={16} /> Logout
                       </button>
-                    </motion.div>
+                    </MotionDiv>
                   )}
                 </AnimatePresence>
               </div>
@@ -200,22 +219,35 @@ const Navbar = () => {
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "100vh" }}
             exit={{ opacity: 0, height: 0 }}
             className="fixed inset-0 top-[60px] bg-[#0b1a33] z-40 md:hidden overflow-y-auto"
           >
             <div className="flex flex-col p-6 gap-4 text-white">
-              <MobileNavLink to="/" onClick={() => setMobileMenuOpen(false)} icon={<Home size={20} />}>Home</MobileNavLink>
-              
-              <div className="py-2 border-t border-gray-700">
-                <p className="text-gray-400 text-sm mb-2 uppercase tracking-wider">Explore</p>
-                <MobileNavLink to="/events" onClick={() => setMobileMenuOpen(false)} icon={<Calendar size={20} />}>All Events</MobileNavLink>
-                <MobileNavLink to="/clubs" onClick={() => setMobileMenuOpen(false)} icon={<Users size={20} />}>All Clubs</MobileNavLink>
-              </div>
-
-              <MobileNavLink to="/contact" onClick={() => setMobileMenuOpen(false)} icon={<Phone size={20} />}>Contact</MobileNavLink>
+              {role === "admin" ? (
+                <>
+                  <MobileNavLink to="/admin" onClick={() => setMobileMenuOpen(false)} icon={<Home size={20} />}>Admin Overview</MobileNavLink>
+                  <MobileNavLink to="/admin/clubs" onClick={() => setMobileMenuOpen(false)} icon={<Users size={20} />}>Manage Clubs</MobileNavLink>
+                </>
+              ) : role === "club" ? (
+                <>
+                  <MobileNavLink to="/club" onClick={() => setMobileMenuOpen(false)} icon={<Calendar size={20} />}>Club Dashboard</MobileNavLink>
+                  <MobileNavLink to="/events" onClick={() => setMobileMenuOpen(false)} icon={<Calendar size={20} />}>Public Events</MobileNavLink>
+                  <MobileNavLink to="/clubs" onClick={() => setMobileMenuOpen(false)} icon={<Users size={20} />}>Campus Clubs</MobileNavLink>
+                </>
+              ) : (
+                <>
+                  <MobileNavLink to="/dashboard" onClick={() => setMobileMenuOpen(false)} icon={<Home size={20} />}>Student Dashboard</MobileNavLink>
+                  <div className="border-t border-gray-700 py-2">
+                    <p className="mb-2 text-sm uppercase tracking-wider text-gray-400">Explore</p>
+                    <MobileNavLink to="/events" onClick={() => setMobileMenuOpen(false)} icon={<Calendar size={20} />}>All Events</MobileNavLink>
+                    <MobileNavLink to="/clubs" onClick={() => setMobileMenuOpen(false)} icon={<Users size={20} />}>All Clubs</MobileNavLink>
+                  </div>
+                  <MobileNavLink to="/contact" onClick={() => setMobileMenuOpen(false)} icon={<Phone size={20} />}>Contact</MobileNavLink>
+                </>
+              )}
 
               <div className="mt-4 pt-4 border-t border-gray-700">
                 {!loggedIn ? (
@@ -228,8 +260,8 @@ const Navbar = () => {
                   </Link>
                 ) : (
                   <div className="space-y-3">
-                    <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 p-2 bg-gray-800 rounded-lg">
-                      <User size={20} className="text-blue-400" /> My Profile
+                    <Link to={role === "admin" ? "/admin" : role === "club" ? "/club" : "/profile"} onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 p-2 bg-gray-800 rounded-lg">
+                      <User size={20} className="text-blue-400" /> {role === "admin" ? "Admin Overview" : role === "club" ? "Club Dashboard" : "My Profile"}
                     </Link>
                     <button 
                       onClick={handleLogout}
@@ -241,7 +273,7 @@ const Navbar = () => {
                 )}
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
         )}
       </AnimatePresence>
     </>
@@ -288,7 +320,7 @@ const FlyoutLink = ({ title, items }) => {
 
       <AnimatePresence>
         {open && (
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 15 }}
@@ -309,7 +341,7 @@ const FlyoutLink = ({ title, items }) => {
                 </Link>
               ))}
             </div>
-          </motion.div>
+          </MotionDiv>
         )}
       </AnimatePresence>
     </div>

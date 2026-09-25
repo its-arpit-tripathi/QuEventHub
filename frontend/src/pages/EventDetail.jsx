@@ -130,6 +130,8 @@ export default function EventDetail() {
           <img
             src={imageSrc}
             alt={event.title}
+            loading="lazy"
+            decoding="async"
             className="w-full h-48 object-cover rounded-lg shadow-md"
           />
         )}
@@ -162,6 +164,8 @@ export default function EventDetail() {
                   <img
                     src={regStatus.qrCodeUrl || event.paymentQrCode}
                     alt="Payment QR Code"
+                    loading="lazy"
+                    decoding="async"
                     className="w-40 h-40 object-contain mx-auto my-4 border p-1 rounded"
                   />
                 )}

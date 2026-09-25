@@ -182,21 +182,30 @@ const ClubDashboard = () => {
   const labelClasses = "block text-xs font-medium text-gray-500 mb-1";
 
   return (
-    <div className="min-h-screen bg-gray-50/50 p-6 pt-24">
+    <div className="min-h-screen bg-slate-50 p-4 pt-24 sm:p-6 sm:pt-24">
       <div className="max-w-7xl mx-auto">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="mb-7 overflow-hidden rounded-2xl bg-gradient-to-br from-[#102a43] via-[#164e63] to-[#0e7490] p-6 text-white shadow-xl sm:p-8">
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Club Dashboard</h1>
-            <p className="text-gray-500 mt-1">Manage your events and track student attendance.</p>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-cyan-200">Club workspace</p>
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Run your next event with confidence.</h1>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-200">Create experiences, keep registrations organized, and see who showed up.</p>
           </div>
           <button 
             onClick={() => { resetForm(); setIsFormOpen(!isFormOpen); }}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-all shadow-sm ${isFormOpen ? 'bg-gray-200 text-gray-800' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+            className={`flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-bold transition-all shadow-lg ${isFormOpen ? 'bg-white/15 text-white hover:bg-white/25' : 'bg-cyan-300 text-slate-950 hover:bg-cyan-200'}`}
           >
             {isFormOpen ? <><X size={18}/> Cancel</> : <><Plus size={18}/> Create Event</>}
           </button>
+          </div>
+        </div>
+
+        <div className="mb-7 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-sm text-slate-500">Published events</p><p className="mt-1 text-3xl font-bold text-slate-900">{events.length}</p></div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-sm text-slate-500">Total registrations</p><p className="mt-1 text-3xl font-bold text-slate-900">{events.reduce((total, event) => total + (event.registrationsCount || 0), 0)}</p></div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-sm text-slate-500">Workspace status</p><p className="mt-1 text-lg font-bold text-emerald-600">Ready to publish</p></div>
         </div>
 
         {error && (
@@ -208,10 +217,16 @@ const ClubDashboard = () => {
 
         {/* Event Form */}
         {isFormOpen && (
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
-            <h2 className="text-lg font-semibold text-gray-900 mb-5 border-b pb-2">
+          <div className="mb-8 rounded-2xl border border-cyan-100 bg-white p-5 shadow-xl shadow-cyan-900/5 animate-in fade-in slide-in-from-top-4 duration-300 sm:p-7">
+            <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-600">Event builder</p>
+                <h2 className="mt-1 text-xl font-bold text-slate-900">
               {editingId ? "Edit Event Details" : "Create New Event"}
-            </h2>
+                </h2>
+              </div>
+              <Calendar className="hidden text-cyan-500 sm:block" size={28} />
+            </div>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
                 <div className="col-span-1 md:col-span-2">
@@ -303,18 +318,18 @@ const ClubDashboard = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+              <div className="flex flex-col-reverse justify-end gap-3 border-t border-slate-100 pt-5 sm:flex-row">
                 <button
                   type="button"
                   onClick={() => setIsFormOpen(false)}
-                  className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+                    className="rounded-xl border border-slate-200 px-5 py-2.5 text-slate-700 transition-colors hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm disabled:opacity-50 transition-colors font-medium"
+                  className="rounded-xl bg-cyan-600 px-6 py-2.5 font-bold text-white shadow-lg shadow-cyan-600/20 transition-colors hover:bg-cyan-700 disabled:opacity-50"
                 >
                   {saving ? "Saving..." : editingId ? "Update Event" : "Publish Event"}
                 </button>
@@ -341,18 +356,18 @@ const ClubDashboard = () => {
              </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {events.map((ev) => (
               <div
                 key={ev._id}
-                className="group bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200 flex flex-col"
+                className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow duration-200 hover:shadow-xl"
               >
                 {/* Card Image */}
-                <div className="relative h-48 bg-gray-100 overflow-hidden">
+                <div className="relative h-40 overflow-hidden bg-slate-100">
                   {ev.imageUrl ? (
-                    <img src={ev.imageUrl} alt={ev.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={ev.imageUrl} alt={ev.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 text-white/50">
                        <ImageIcon size={48} />
                     </div>
                   )}
@@ -364,8 +379,8 @@ const ClubDashboard = () => {
                 </div>
 
                 {/* Card Content */}
-                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{ev.title}</h3>
+                <div className="flex flex-1 flex-col p-5">
+                  <h3 className="mb-2 line-clamp-1 text-lg font-bold text-slate-900">{ev.title}</h3>
                   
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center text-sm text-gray-500">

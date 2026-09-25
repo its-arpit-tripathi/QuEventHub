@@ -76,6 +76,8 @@ const ClubDetails = () => {
         <img
           src={imageSrc}
           alt={club.name}
+          loading="lazy"
+          decoding="async"
           className="w-full h-64 object-cover rounded-lg mb-6"
         />
       )}

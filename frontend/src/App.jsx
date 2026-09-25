@@ -20,6 +20,7 @@ import AdminClubs from "./pages/AdminClubs";
 import ClubDashboard from "./pages/ClubDashboard";
 import ClubDetails from "./pages/ClubDetails";
 import Profile from "./pages/Profile";
+import StudentDashboard from "./pages/StudentDashboard";
 import NotFound from "./pages/NotFound";
 
 // Loading fallback component
@@ -51,9 +52,17 @@ export default function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/clubs/:id" element={<ClubDetails />} />
             <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/profile"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["student", "admin"]}>
                   <Profile />
                 </ProtectedRoute>
               }
@@ -61,7 +70,7 @@ export default function App() {
             <Route
               path="/admin"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["admin"]}>
                   <Admin />
                 </ProtectedRoute>
               }
@@ -69,7 +78,7 @@ export default function App() {
             <Route
               path="/admin/clubs"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["admin"]}>
                   <AdminClubs />
                 </ProtectedRoute>
               }
@@ -77,7 +86,7 @@ export default function App() {
             <Route
               path="/club"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["club"]}>
                   <ClubDashboard />
                 </ProtectedRoute>
               }

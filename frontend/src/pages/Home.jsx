@@ -84,8 +84,8 @@ export default function Home() {
             <div className="grid gap-5 md:grid-cols-3">
               {events.map((event) => (
                 <Link key={event._id} to={`/events/${event._id}`} className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                  <div className="relative h-36 overflow-hidden bg-gradient-to-br from-blue-600 to-cyan-500">
-                    {event.imageUrl && <img src={event.imageUrl} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />}
+                  <div className="relative h-36 overflow-hidden bg-gradient-to-br from-blue-600 via-cyan-500 to-teal-400">
+                    {event.imageUrl && <img src={event.imageUrl} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />}
                     <span className="absolute left-4 top-4 rounded-full bg-slate-950/65 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">{event.category || "Campus"}</span>
                   </div>
                   <div className="p-5">
@@ -104,8 +104,8 @@ export default function Home() {
             <div className="grid gap-5 md:grid-cols-3">
               {clubs.map((club) => (
                 <Link key={club._id} to={`/clubs/${club._id}`} className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                  <div className="relative flex h-36 items-end overflow-hidden bg-gradient-to-br from-fuchsia-500 to-purple-700 p-5">
-                    {club.imageUrl && <img src={club.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+                  <div className="relative flex h-36 items-end overflow-hidden bg-gradient-to-br from-violet-600 via-fuchsia-500 to-pink-500 p-5">
+                    {club.imageUrl && <img src={club.imageUrl} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />}
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 to-transparent" />
                     <span className="relative rounded-full bg-slate-950/55 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">{club.category || "Community"}</span>
                   </div>

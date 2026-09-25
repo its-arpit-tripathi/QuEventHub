@@ -16,6 +16,14 @@ import {
 
 const categoryFilters = ["all", "technical", "cultural", "sports", "arts", "music"];
 
+const clubFallbackColors = {
+  technical: "from-violet-600 via-fuchsia-500 to-pink-500",
+  cultural: "from-rose-600 via-pink-500 to-orange-400",
+  sports: "from-orange-500 via-amber-500 to-yellow-400",
+  arts: "from-indigo-600 via-purple-500 to-fuchsia-400",
+  music: "from-cyan-600 via-teal-500 to-emerald-400",
+};
+
 const Clubs = () => {
   const [clubs, setClubs] = useState([]);
   const [filteredClubs, setFilteredClubs] = useState([]);
@@ -196,10 +204,12 @@ const Clubs = () => {
                       <img
                         src={imageSrc}
                         alt={club.name}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                      <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${clubFallbackColors[club.category?.toLowerCase()] || "from-purple-600 to-pink-600"}`}>
                         <Users className="text-white/30 w-16 h-16" />
                       </div>
                     )}
