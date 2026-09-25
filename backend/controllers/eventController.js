@@ -35,9 +35,16 @@ export const createClubEvent = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Only clubs can create events' });
     }
 
-    const imageUrl = req.file
-      ? await uploadImage(req.file, 'queventhub/events')
+    const imageFile = req.files && req.files['image'] ? req.files['image'][0] : null;
+    const paymentQrFile = req.files && req.files['paymentQr'] ? req.files['paymentQr'][0] : null;
+
+    const imageUrl = imageFile
+      ? await uploadImage(imageFile, 'queventhub/events')
       : req.body.imageUrl;
+
+    const paymentQrCode = paymentQrFile
+      ? await uploadImage(paymentQrFile, 'queventhub/events')
+      : req.body.paymentQrCode;
 
     const payload = {
       title: req.body.title,
@@ -49,7 +56,7 @@ export const createClubEvent = async (req, res) => {
       category: req.body.category,
       isPaid: req.body.isPaid === true || req.body.isPaid === 'true',
       price: Number(req.body.price) || 0,
-      paymentQrCode: req.body.paymentQrCode,
+      paymentQrCode,
       imageUrl,
       capacity: Number(req.body.capacity) || 0,
       organizer: req.club?.name || 'Club Event',
@@ -83,7 +90,11 @@ export const updateClubEvent = async (req, res) => {
     if (req.body.isPaid !== undefined) event.isPaid = req.body.isPaid === true || req.body.isPaid === 'true';
     if (req.body.price !== undefined) event.price = Number(req.body.price) || 0;
     if (req.body.capacity !== undefined) event.capacity = Number(req.body.capacity) || 0;
-    if (req.file) event.imageUrl = await uploadImage(req.file, 'queventhub/events');
+    const imageFile = req.files && req.files['image'] ? req.files['image'][0] : null;
+    const paymentQrFile = req.files && req.files['paymentQr'] ? req.files['paymentQr'][0] : null;
+
+    if (imageFile) event.imageUrl = await uploadImage(imageFile, 'queventhub/events');
+    if (paymentQrFile) event.paymentQrCode = await uploadImage(paymentQrFile, 'queventhub/events');
     await event.save();
 
     res.status(200).json({ success: true, data: event });

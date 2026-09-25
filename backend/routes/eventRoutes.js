@@ -35,8 +35,8 @@ router.get('/', getEvents);
 
 // Club-managed events (club auth required)
 router.get('/club', protect, requireClub, getClubEvents);
-router.post('/club', protect, requireClub, imageUpload.single('image'), createClubEvent);
-router.put('/club/:id', protect, requireClub, imageUpload.single('image'), updateClubEvent);
+router.post('/club', protect, requireClub, imageUpload.fields([{ name: 'image', maxCount: 1 }, { name: 'paymentQr', maxCount: 1 }]), createClubEvent);
+router.put('/club/:id', protect, requireClub, imageUpload.fields([{ name: 'image', maxCount: 1 }, { name: 'paymentQr', maxCount: 1 }]), updateClubEvent);
 router.delete('/club/:id', protect, requireClub, deleteClubEvent);
 router.get('/club/:id/registrations', protect, requireClub, getClubEventRegistrations);
 router.post('/club/:id/attendance/:registrationId', protect, requireClub, markAttendance);

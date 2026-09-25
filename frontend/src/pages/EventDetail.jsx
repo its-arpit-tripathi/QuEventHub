@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api";
 import { showToast } from "../utils/toast";
-import { Loader2, Calendar, Clock, MapPin, DollarSign, CheckCircle } from "lucide-react";
+import { Loader2, Calendar, Clock, MapPin, DollarSign, CheckCircle, X } from "lucide-react";
 
 const initialStatus = { state: "idle", message: "", amount: null, qrCodeUrl: null };
 
@@ -13,6 +13,7 @@ export default function EventDetail() {
   const [loading, setLoading] = useState(true);
   const [regStatus, setRegStatus] = useState(initialStatus);
   const [transactionId, setTransactionId] = useState("");
+  const [isQrExpanded, setIsQrExpanded] = useState(false);
 
   useEffect(() => {
     fetchEvent();
@@ -132,7 +133,7 @@ export default function EventDetail() {
             alt={event.title}
             loading="lazy"
             decoding="async"
-            className="w-full h-48 object-cover rounded-lg shadow-md"
+            className="w-full h-48 object-contain bg-slate-100 rounded-lg shadow-md"
           />
         )}
       </div>
@@ -166,7 +167,8 @@ export default function EventDetail() {
                     alt="Payment QR Code"
                     loading="lazy"
                     decoding="async"
-                    className="w-40 h-40 object-contain mx-auto my-4 border p-1 rounded"
+                    onClick={() => setIsQrExpanded(true)}
+                    className="w-40 h-40 object-contain mx-auto my-4 border p-1 rounded cursor-zoom-in hover:opacity-80 transition-opacity shadow-sm"
                   />
                 )}
                 <p className="text-sm mb-3">Amount: ₹{regStatus.amount || event.price || 0}</p>
@@ -198,6 +200,27 @@ export default function EventDetail() {
             </>
           )}
       </div>
+      
+      {/* QR Code Lightbox */}
+      {isQrExpanded && (regStatus.qrCodeUrl || event.paymentQrCode) && (
+        <div 
+          className="fixed inset-0 z-[100] flex justify-center items-center bg-slate-950/80 backdrop-blur-sm cursor-zoom-out p-4"
+          onClick={() => setIsQrExpanded(false)}
+        >
+          <img
+            src={regStatus.qrCodeUrl || event.paymentQrCode}
+            alt="Payment QR Code Expanded"
+            className="max-w-full max-h-[90vh] object-contain bg-white p-4 rounded-xl shadow-2xl cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button 
+            className="absolute top-6 right-6 text-white hover:text-slate-300 transition-colors bg-slate-900/50 p-2 rounded-full"
+            onClick={() => setIsQrExpanded(false)}
+          >
+            <X size={32} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -213,7 +213,7 @@ const Clubs = () => {
                         alt={club.name}
                         loading="lazy"
                         decoding="async"
-                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
                       <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${clubFallbackColors[club.category?.toLowerCase()] || "from-purple-600 to-pink-600"}`}>

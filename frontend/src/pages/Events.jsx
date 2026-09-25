@@ -188,7 +188,7 @@ const Events = () => {
                                         alt={event.title} 
                                         loading="lazy"
                                         decoding="async"
-                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                        className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500"
                                     />
                                 ) : (
                                     <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${eventFallbackColors[event.category] || "from-blue-600 to-indigo-600"}`}>

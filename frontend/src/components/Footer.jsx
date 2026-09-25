@@ -3,6 +3,24 @@ import { Facebook, Twitter, Instagram, Mail, MapPin, Phone } from "lucide-react"
 import { Link } from "react-router-dom";
 
 export default function Footer() {
+  const userString = localStorage.getItem("user");
+  const user = userString && userString !== "undefined" ? JSON.parse(userString) : null;
+  const role = user?.role;
+
+  let dashboardLink = "/login";
+  let dashboardText = "Dashboard";
+
+  if (role === "admin") {
+    dashboardLink = "/admin";
+    dashboardText = "Admin Dashboard";
+  } else if (role === "club") {
+    dashboardLink = "/club";
+    dashboardText = "Club Dashboard";
+  } else if (role === "student") {
+    dashboardLink = "/dashboard";
+    dashboardText = "Student Dashboard";
+  }
+
   return (
     <footer className="bg-slate-900 text-white py-12">
       <div className="max-w-7xl mx-auto px-6">
@@ -21,8 +39,8 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-slate-400">
               <li>
-                <Link to="/dashboard" className="hover:text-blue-400 transition">
-                  Student Dashboard
+                <Link to={dashboardLink} className="hover:text-blue-400 transition">
+                  {dashboardText}
                 </Link>
               </li>
               <li>
@@ -40,11 +58,6 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
-              <li>
-                <Link to="/admin" className="hover:text-blue-400 transition">
-                  Admin
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -54,15 +67,15 @@ export default function Footer() {
             <div className="space-y-3 text-slate-400 text-sm">
               <div className="flex items-center gap-2">
                 <Mail size={18} />
-                <span>info@campuseventhub.com</span>
+                <span>collegeatlas.info@gmail.com</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone size={18} />
-                <span>+1 (555) 123-4567</span>
+                <span>9170441355</span>
               </div>
-              <div className="flex items-center gap-2">
-                <MapPin size={18} />
-                <span>Campus Central, Building A</span>
+              <div className="flex items-start gap-2">
+                <MapPin size={18} className="mt-0.5 shrink-0" />
+                <span>Quantum University, Roorkee, Uttarakhand, India</span>
               </div>
             </div>
           </div>

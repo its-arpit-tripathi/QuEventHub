@@ -29,6 +29,8 @@ const emptyForm = {
   capacity: 0,
   imageUrl: "",
   imageFile: null,
+  paymentQrCode: "",
+  paymentQrFile: null,
 };
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
@@ -43,6 +45,8 @@ const ClubDashboard = () => {
   const [selectedEventId, setSelectedEventId] = useState(null); // Triggers Modal
   const [error, setError] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [qrPreviewUrl, setQrPreviewUrl] = useState(null);
 
   const loadEvents = async () => {
     setLoading(true);
@@ -65,6 +69,8 @@ const ClubDashboard = () => {
   const resetForm = () => {
     setForm(emptyForm);
     setEditingId(null);
+    setImagePreviewUrl(null);
+    setQrPreviewUrl(null);
     setIsFormOpen(false);
   };
 
@@ -82,20 +88,84 @@ const ClubDashboard = () => {
     }
     setError("");
     setForm((current) => ({ ...current, imageFile: image }));
+    setImagePreviewUrl(URL.createObjectURL(image));
+  };
+
+  const handleQrChange = (event) => {
+    const qr = event.target.files?.[0];
+    if (!qr) return;
+    if (!qr.type.startsWith("image/")) {
+      setError("Please select an image file for QR.");
+      return;
+    }
+    if (qr.size > MAX_IMAGE_SIZE) {
+      setError("QR image must be 2 MB or smaller.");
+      event.target.value = "";
+      return;
+    }
+    setError("");
+    setForm((current) => ({ ...current, paymentQrFile: qr }));
+    setQrPreviewUrl(URL.createObjectURL(qr));
+  };
+
+  const handlePaste = (event, type) => {
+    const items = event.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf("image") !== -1) {
+        const file = items[i].getAsFile();
+        if (file) {
+          if (type === 'image') handleImageChange({ target: { files: [file] } });
+          else if (type === 'qr') handleQrChange({ target: { files: [file] } });
+        }
+        event.preventDefault();
+        break;
+      }
+    }
+  };
+
+  const handlePasteClick = async (e, type) => {
+    e.stopPropagation();
+    try {
+      const clipboardItems = await navigator.clipboard.read();
+      for (const clipboardItem of clipboardItems) {
+        for (const typeStr of clipboardItem.types) {
+          if (typeStr.startsWith("image/")) {
+            const blob = await clipboardItem.getType(typeStr);
+            const file = new File([blob], "pasted-image.png", { type: typeStr });
+            if (type === 'image') handleImageChange({ target: { files: [file] } });
+            else if (type === 'qr') handleQrChange({ target: { files: [file] } });
+            return;
+          }
+        }
+      }
+      showToast("No image found in clipboard.", "info");
+    } catch (err) {
+      console.error("Paste error:", err);
+      showToast("Unable to read clipboard. Please grant permission or use Ctrl+V.", "error");
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError("");
+
+    if (form.price > 0 && !form.paymentQrCode && !form.paymentQrFile) {
+      setError("Payment QR Code is required for paid events.");
+      setSaving(false);
+      return;
+    }
+
     try {
       const payload = new FormData();
       Object.entries(form).forEach(([key, value]) => {
-        if (key !== "imageFile" && value !== undefined && value !== null) {
+        if (key !== "imageFile" && key !== "paymentQrFile" && value !== undefined && value !== null) {
           payload.append(key, value);
         }
       });
       if (form.imageFile) payload.append("image", form.imageFile);
+      if (form.paymentQrFile) payload.append("paymentQr", form.paymentQrFile);
 
       if (editingId) {
         await api.put(`/events/club/${editingId}`, payload);
@@ -129,7 +199,11 @@ const ClubDashboard = () => {
       capacity: ev.capacity || 0,
       imageUrl: ev.imageUrl || "",
       imageFile: null,
+      paymentQrCode: ev.paymentQrCode || "",
+      paymentQrFile: null,
     });
+    setImagePreviewUrl(ev.imageUrl || null);
+    setQrPreviewUrl(ev.paymentQrCode || null);
     setIsFormOpen(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -267,56 +341,130 @@ const ClubDashboard = () => {
                   />
                 </div>
                 <div>
-                  <label className={labelClasses}>Time</label>
+                  <label className={labelClasses}>Time <span className="text-red-500">*</span></label>
                   <input
                     type="time"
                     value={form.time}
                     onChange={(e) => setForm({ ...form, time: e.target.value })}
                     className={inputClasses}
+                    required
                   />
                 </div>
                 <div>
-                  <label className={labelClasses}>Venue</label>
+                  <label className={labelClasses}>Venue <span className="text-red-500">*</span></label>
                   <input
                     placeholder="e.g. Auditorium"
                     value={form.venue}
                     onChange={(e) => setForm({ ...form, venue: e.target.value })}
                     className={inputClasses}
+                    required
                   />
                 </div>
 
                 <div>
-                   <label className={labelClasses}>Registration Deadline</label>
+                   <label className={labelClasses}>Registration Deadline <span className="text-red-500">*</span></label>
                    <input
                     type="date"
                     value={form.registrationDeadline}
                     onChange={(e) => setForm({ ...form, registrationDeadline: e.target.value })}
                     className={inputClasses}
+                    required
                   />
                 </div>
                 <div>
-                  <label className={labelClasses}>Capacity (0 for unlimited)</label>
+                  <label className={labelClasses}>Capacity (0 for unlimited) <span className="text-red-500">*</span></label>
                   <input
                     type="number"
                     value={form.capacity}
                     onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })}
                     className={inputClasses}
                     min={0}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className={labelClasses}>Price (0 for Free) <span className="text-red-500">*</span></label>
+                  <input
+                    type="number"
+                    value={form.price}
+                    onChange={(e) => setForm({ ...form, price: Number(e.target.value), isPaid: Number(e.target.value) > 0 })}
+                    className={inputClasses}
+                    min={0}
+                    required
                   />
                 </div>
                 <div>
                   <label className={labelClasses}>Event Image (max 2 MB)</label>
-                  <input type="file" accept="image/*" onChange={handleImageChange} className={inputClasses} />
-                  {form.imageFile && <p className="mt-1 text-xs text-green-600">{form.imageFile.name}</p>}
+                  <div className="relative group">
+                    <div
+                      tabIndex={0}
+                      onPaste={(e) => handlePaste(e, 'image')}
+                      className="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-200 rounded-xl hover:border-cyan-400 hover:bg-slate-50/50 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all overflow-hidden relative min-h-[140px]"
+                    >
+                      {imagePreviewUrl ? (
+                        <div className="relative w-full h-full rounded-lg overflow-hidden flex items-center justify-center">
+                          <img src={imagePreviewUrl} alt="Event Preview" className="w-full h-full object-contain absolute inset-0" />
+                          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-medium z-10">
+                            <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('eventImageInput')?.click(); }} className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition">Change Image</button>
+                            <button type="button" onClick={(e) => handlePasteClick(e, 'image')} className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition">Paste Clipboard</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="py-4 flex flex-col items-center text-slate-400 w-full">
+                          <div className="mt-2 flex gap-2">
+                             <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('eventImageInput')?.click(); }} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition cursor-pointer">Select File</button>
+                             <button type="button" onClick={(e) => handlePasteClick(e, 'image')} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition cursor-pointer">Paste Image</button>
+                          </div>
+                          <span className="text-xs text-slate-400 mt-3 text-center">Or click inside and press Ctrl+V</span>
+                        </div>
+                      )}
+                      <input id="eventImageInput" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                    </div>
+                  </div>
+                  {form.imageFile && <p className="mt-1 text-xs text-green-600 font-medium truncate">Selected: {form.imageFile.name}</p>}
                 </div>
+                
+                {form.price > 0 && (
+                  <div>
+                    <label className={labelClasses}>Payment QR Code <span className="text-red-500">*</span></label>
+                    <div className="relative group">
+                      <div
+                        tabIndex={0}
+                        onPaste={(e) => handlePaste(e, 'qr')}
+                        className="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-200 rounded-xl hover:border-cyan-400 hover:bg-slate-50/50 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 transition-all overflow-hidden relative min-h-[140px]"
+                      >
+                        {qrPreviewUrl ? (
+                          <div className="relative w-full h-full rounded-lg overflow-hidden flex items-center justify-center">
+                            <img src={qrPreviewUrl} alt="QR Preview" className="w-full h-full object-contain absolute inset-0" />
+                            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-medium z-10">
+                              <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('paymentQrInput')?.click(); }} className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition">Change QR</button>
+                              <button type="button" onClick={(e) => handlePasteClick(e, 'qr')} className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition">Paste Clipboard</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="py-4 flex flex-col items-center text-slate-400 w-full">
+                            <div className="mt-2 flex gap-2">
+                               <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('paymentQrInput')?.click(); }} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition cursor-pointer">Select QR</button>
+                               <button type="button" onClick={(e) => handlePasteClick(e, 'qr')} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition cursor-pointer">Paste Image</button>
+                            </div>
+                            <span className="text-xs text-slate-400 mt-3 text-center">Or click inside and press Ctrl+V</span>
+                          </div>
+                        )}
+                        <input id="paymentQrInput" type="file" accept="image/*" onChange={handleQrChange} className="hidden" />
+                      </div>
+                    </div>
+                    {form.paymentQrFile && <p className="mt-1 text-xs text-green-600 font-medium truncate">Selected: {form.paymentQrFile.name}</p>}
+                  </div>
+                )}
 
                 <div className="col-span-1 md:col-span-3">
-                  <label className={labelClasses}>Description</label>
+                  <label className={labelClasses}>Description <span className="text-red-500">*</span></label>
                   <textarea
                     placeholder="Describe your event..."
                     value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     className={`${inputClasses} h-32 resize-none`}
+                    required
                   />
                 </div>
               </div>
@@ -376,7 +524,7 @@ const ClubDashboard = () => {
                 {/* Card Image */}
                 <div className="uniform-card-media relative overflow-hidden bg-slate-100">
                   {ev.imageUrl ? (
-                    <img src={ev.imageUrl} alt={ev.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={ev.imageUrl} alt={ev.title} loading="lazy" decoding="async" className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 text-white/50">
                        <ImageIcon size={48} />

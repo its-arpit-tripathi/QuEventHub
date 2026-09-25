@@ -107,6 +107,8 @@ const Navbar = () => {
               <>
                 <NavLink to="/admin">Admin Overview</NavLink>
                 <NavLink to="/admin/clubs">Manage Clubs</NavLink>
+                <NavLink to="/events">Public Events</NavLink>
+                <NavLink to="/clubs">Campus Clubs</NavLink>
               </>
             ) : role === "club" ? (
               <>
@@ -171,24 +173,9 @@ const Navbar = () => {
                       exit={{ opacity: 0, y: 15 }}
                       className="absolute right-0 mt-3 w-48 bg-white rounded-xl shadow-xl py-2 overflow-hidden text-gray-800"
                     >
-                      {role === "admin" ? (
-                        <Link to="/admin" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
-                          <User size={16} /> Admin Panel
-                        </Link>
-                      ) : role === "club" ? (
-                        <Link to="/club" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
-                          <Calendar size={16} /> Club Dashboard
-                        </Link>
-                      ) : (
-                        <>
-                          <Link to="/dashboard" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
-                            <Home size={16} /> Student Dashboard
-                          </Link>
-                          <Link to="/profile" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
-                            <User size={16} /> Profile
-                          </Link>
-                        </>
-                      )}
+                      <Link to="/profile" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition">
+                        <User size={16} /> Profile
+                      </Link>
                       <button 
                         onClick={handleLogout}
                         className="w-full text-left flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 transition"
@@ -228,6 +215,8 @@ const Navbar = () => {
                 <>
                   <MobileNavLink to="/admin" onClick={() => setMobileMenuOpen(false)} icon={<Home size={20} />}>Admin Overview</MobileNavLink>
                   <MobileNavLink to="/admin/clubs" onClick={() => setMobileMenuOpen(false)} icon={<Users size={20} />}>Manage Clubs</MobileNavLink>
+                  <MobileNavLink to="/events" onClick={() => setMobileMenuOpen(false)} icon={<Calendar size={20} />}>Public Events</MobileNavLink>
+                  <MobileNavLink to="/clubs" onClick={() => setMobileMenuOpen(false)} icon={<Users size={20} />}>Campus Clubs</MobileNavLink>
                 </>
               ) : role === "club" ? (
                 <>
@@ -258,8 +247,8 @@ const Navbar = () => {
                   </Link>
                 ) : (
                   <div className="space-y-3">
-                    <Link to={role === "admin" ? "/admin" : role === "club" ? "/club" : "/profile"} onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 p-2 bg-gray-800 rounded-lg">
-                      <User size={20} className="text-blue-400" /> {role === "admin" ? "Admin Overview" : role === "club" ? "Club Dashboard" : "My Profile"}
+                    <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 p-2 bg-gray-800 rounded-lg">
+                      <User size={20} className="text-blue-400" /> My Profile
                     </Link>
                     <button 
                       onClick={handleLogout}

@@ -34,10 +34,9 @@ const protect = async (req, res, next) => {
       }
       // Attach a normalized user-like object and raw club for downstream use
       req.user = {
-        _id: club._id,
+        ...club.toObject(),
         role: 'club',
-        name: club.name,
-        clubId: club.clubId,
+        email: club.contactEmail,
         isClub: true,
       };
       req.club = club;

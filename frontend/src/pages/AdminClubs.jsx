@@ -138,6 +138,42 @@ const AdminClubs = () => {
     setPreviewUrl(URL.createObjectURL(file));
   };
 
+  const handlePaste = (event) => {
+    const items = event.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf("image") !== -1) {
+        const file = items[i].getAsFile();
+        if (file) {
+          handleImageChange({ target: { files: [file] } });
+        }
+        event.preventDefault();
+        break;
+      }
+    }
+  };
+
+  const handlePasteClick = async (e) => {
+    e.stopPropagation();
+    try {
+      const clipboardItems = await navigator.clipboard.read();
+      for (const clipboardItem of clipboardItems) {
+        for (const typeStr of clipboardItem.types) {
+          if (typeStr.startsWith("image/")) {
+            const blob = await clipboardItem.getType(typeStr);
+            const file = new File([blob], "pasted-image.png", { type: typeStr });
+            handleImageChange({ target: { files: [file] } });
+            return;
+          }
+        }
+      }
+      showToast("No image found in clipboard.", "info");
+    } catch (err) {
+      console.error("Paste error:", err);
+      showToast("Unable to read clipboard. Please grant permission or use Ctrl+V.", "error");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -322,27 +358,30 @@ const AdminClubs = () => {
                     <label className={labelClasses}>Cover Banner</label>
                     <div className="relative group">
                       <div
-                        onClick={() => fileInputRef.current?.click()}
-                        className="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-indigo-400 hover:bg-slate-50/50 transition-all overflow-hidden"
+                        tabIndex={0}
+                        onPaste={handlePaste}
+                        className="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-200 rounded-xl hover:border-indigo-400 hover:bg-slate-50/50 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all overflow-hidden relative"
                       >
                         {previewUrl ? (
                           <div className="relative w-full h-28 rounded-lg overflow-hidden">
                             <img
                               src={previewUrl}
                               alt="Preview"
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-contain"
                             />
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-medium">
-                              Change Image
+                            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-medium">
+                              <button type="button" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }} className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition">Change Image</button>
+                              <button type="button" onClick={handlePasteClick} className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition">Paste Clipboard</button>
                             </div>
                           </div>
                         ) : (
-                          <div className="py-2 flex flex-col items-center text-slate-400">
+                          <div className="py-2 flex flex-col items-center text-slate-400 w-full">
                             <Icons.Upload />
-                            <span className="mt-1.5 text-xs font-medium text-slate-600">
-                              Upload Club Image
-                            </span>
-                            <span className="text-[10px] text-slate-400 mt-0.5">PNG, JPG up to 2MB</span>
+                            <div className="mt-3 flex gap-2">
+                               <button type="button" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }} className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition cursor-pointer">Select File</button>
+                               <button type="button" onClick={handlePasteClick} className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition cursor-pointer">Paste Image</button>
+                            </div>
+                            <span className="text-[10px] text-slate-400 mt-2">PNG, JPG up to 2MB</span>
                           </div>
                         )}
                       </div>
@@ -483,7 +522,7 @@ const AdminClubs = () => {
                           alt={c.name}
                           loading="lazy"
                           decoding="async"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-tr from-slate-800 to-indigo-900 flex items-center justify-center text-white/70">

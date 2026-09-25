@@ -52,7 +52,9 @@ export default function Profile() {
           q_id: userData.q_id || "",
           course: userData.course || "",
           year: userData.year || "",
-          section: userData.section || ""
+          section: userData.section || "",
+          clubId: userData.clubId || "",
+          category: userData.category || "",
         });
       } catch (err) {
         if (err.response?.status === 401 || err.response?.status === 403) {
@@ -142,7 +144,7 @@ export default function Profile() {
                 
                 {/* Name & Email (Now inside blue section) */}
                 <div className="text-center sm:text-left text-white mb-2">
-                  <h1 className="text-3xl font-bold tracking-tight">{formData.name || "Student"}</h1>
+                  <h1 className="text-3xl font-bold tracking-tight">{formData.name || user.role}</h1>
                   <p className="text-blue-100 text-sm mt-1 flex items-center justify-center sm:justify-start gap-2">
                     <Mail size={14} /> {user.email}
                   </p>
@@ -191,8 +193,9 @@ export default function Profile() {
                     </div>
                 </div>
 
-                {/* Right Column: Editable Academic Info */}
+                {/* Right Column: Editable Info */}
                 <div className="md:col-span-2 space-y-6">
+                    {user.role === 'student' && (
                     <div className="bg-white">
                         <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center">
                            <User className="mr-2 text-blue-600" size={20} /> 
@@ -285,8 +288,92 @@ export default function Profile() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    )}
+
+                    {(user.role === 'club' || user.isClub) && (
+                        <div className="bg-white">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center">
+                               <BadgeCheck className="mr-2 text-blue-600" size={20} /> 
+                               Club Information
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Club Name</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <User className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            value={formData.name}
+                                            readOnly
+                                            className="pl-10 w-full p-3 border border-gray-300 rounded-lg bg-gray-50 opacity-70 cursor-not-allowed outline-none"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-span-2 md:col-span-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Club ID</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Hash className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            value={formData.clubId}
+                                            readOnly
+                                            className="pl-10 w-full p-3 border border-gray-300 rounded-lg bg-gray-50 opacity-70 cursor-not-allowed outline-none"
+                                        />
+                                    </div>
+                                </div>
+                                {formData.category && (
+                                <div className="col-span-2 md:col-span-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <BookOpen className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            value={formData.category}
+                                            readOnly
+                                            className="pl-10 w-full p-3 border border-gray-300 rounded-lg bg-gray-50 opacity-70 cursor-not-allowed outline-none"
+                                        />
+                                    </div>
+                                </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {user.role === 'admin' && (
+                        <div className="bg-white">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center">
+                               <BadgeCheck className="mr-2 text-blue-600" size={20} /> 
+                               Admin Profile
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Admin Name</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <User className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                         {/* Action Buttons */}
+                        {user.role !== 'club' && !user.isClub && (
                         <div className="mt-8 flex gap-4 border-t pt-6">
                             <button
                                 type="submit"
@@ -314,7 +401,7 @@ export default function Profile() {
                                 Cancel
                             </button>
                         </div>
-                    </div>
+                        )}
                 </div>
               </div>
             </form>

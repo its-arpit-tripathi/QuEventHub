@@ -8,20 +8,20 @@ const router = Router();
 // All admin routes require admin auth
 router.use(protect, requireAdmin);
 
-// Get all users
+// Get all users (excluding admins)
 router.get('/users', async (_req, res) => {
   try {
-    const users = await User.find().select('-password');
+    const users = await User.find({ role: { $ne: 'admin' } }).select('-password');
     res.json({ success: true, count: users.length, data: users });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 });
 
-// Update user (admin can change basic fields and role)
+// Update user (admin can change basic fields, but not role)
 router.put('/users/:id', async (req, res) => {
   try {
-    const allowed = ['name', 'q_id', 'course', 'section', 'year', 'role'];
+    const allowed = ['name', 'q_id', 'course', 'section', 'year'];
     const updates = {};
     allowed.forEach((key) => {
       if (req.body[key] !== undefined) updates[key] = req.body[key];
@@ -42,13 +42,17 @@ router.put('/users/:id', async (req, res) => {
   }
 });
 
-// Delete user
+// Delete user (prevent deleting admins)
 router.delete('/users/:id', async (req, res) => {
   try {
-    const deleted = await User.findByIdAndDelete(req.params.id);
-    if (!deleted) {
+    const userToDelete = await User.findById(req.params.id);
+    if (!userToDelete) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
+    if (userToDelete.role === 'admin') {
+      return res.status(403).json({ success: false, message: 'Cannot delete an admin user' });
+    }
+    await User.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'User deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

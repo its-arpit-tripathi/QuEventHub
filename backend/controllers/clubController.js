@@ -99,6 +99,11 @@ export const updateClub = async (req, res) => {
       ...req.body,
     };
 
+    if (updates.password) {
+      updates.passwordHash = await bcrypt.hash(updates.password, 10);
+      delete updates.password;
+    }
+
     if (req.file) {
       updates.imageUrl = await uploadImage(req.file, 'queventhub/clubs');
     }

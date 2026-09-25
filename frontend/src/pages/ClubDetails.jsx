@@ -78,7 +78,7 @@ const ClubDetails = () => {
           alt={club.name}
           loading="lazy"
           decoding="async"
-          className="w-full h-64 object-cover rounded-lg mb-6"
+          className="w-full h-64 object-contain rounded-lg mb-6 bg-slate-100"
         />
       )}
       <h1 className="text-3xl font-bold mb-2">{club.name}</h1>
