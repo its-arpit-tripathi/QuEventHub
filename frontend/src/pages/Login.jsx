@@ -112,6 +112,42 @@ export default function Login() {
             </div>
           )}
 
+          <div className="mb-6">
+            <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+              <span className="h-px flex-1 bg-slate-300" />
+              Quick login
+              <span className="h-px flex-1 bg-slate-300" />
+            </div>
+            <p className="mb-3 text-center text-sm font-medium text-slate-600">
+              Use a demo account to preview a role
+            </p>
+            <div className="grid grid-cols-3 gap-3">
+              {demoAccounts.map((account) => (
+                <button
+                  key={account.label}
+                  type="button"
+                  disabled={loading}
+                  onClick={() => handleLogin(account)}
+                  className={`rounded-xl border-2 py-2.5 text-sm font-bold shadow-sm transition focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+                    account.label === 'Student' 
+                      ? 'border-blue-200 bg-blue-50 text-blue-700 hover:border-blue-300 hover:bg-blue-100 focus:ring-blue-500' 
+                      : account.label === 'Admin' 
+                      ? 'border-purple-200 bg-purple-50 text-purple-700 hover:border-purple-300 hover:bg-purple-100 focus:ring-purple-500' 
+                      : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-300 hover:bg-emerald-100 focus:ring-emerald-500'
+                  }`}
+                >
+                  {account.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-6 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+            <span className="h-px flex-1 bg-slate-300" />
+            or manual login
+            <span className="h-px flex-1 bg-slate-300" />
+          </div>
+
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             
             {/* Identifier Input */}
@@ -165,29 +201,7 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-5">
-            <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
-              <span className="h-px flex-1 bg-slate-200" />
-              Quick login
-              <span className="h-px flex-1 bg-slate-200" />
-            </div>
-            <p className="mb-2 text-center text-xs text-slate-400">
-              Use a demo account to preview a role
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {demoAccounts.map((account) => (
-                <button
-                  key={account.label}
-                  type="button"
-                  disabled={loading}
-                  onClick={() => handleLogin(account)}
-                  className="rounded-xl border border-slate-200 bg-white py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {account.label}
-                </button>
-              ))}
-            </div>
-          </div>
+
 
           {/* Footer Links */}
           <div className="mt-5 flex flex-col items-center gap-1 text-sm text-slate-500">
