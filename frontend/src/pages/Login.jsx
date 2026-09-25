@@ -31,7 +31,7 @@ export default function Login() {
   ];
 
   const [form, setForm] = useState({
-    identifier: "",  // Q-ID or Email or Phone
+    identifier: "",  // Q-ID or Email
     password: ""
   });
 
@@ -60,7 +60,7 @@ export default function Login() {
 
     } catch (err) {
       if (err.response?.status === 403) {
-        setError("Account not verified. Please verify your email/phone.");
+        setError("Account not verified. Please verify your email.");
       } else {
         setError(err.response?.data?.message || "Invalid credentials. Please try again.");
       }
@@ -158,7 +158,7 @@ export default function Login() {
               </div>
               <input
                 type="text"
-                placeholder="Q-ID, Email, or Phone"
+                placeholder="Q-ID or Email"
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
                 value={form.identifier}
                 onChange={(e) => setForm({ ...form, identifier: e.target.value })}

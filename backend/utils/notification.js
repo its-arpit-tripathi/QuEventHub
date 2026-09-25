@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
-import whatsappClient from './whatsappClient.js'; 
 
 dotenv.config();
 
@@ -43,40 +42,6 @@ export const sendEmailOTP = async (email, otp) => {
 
     } catch (error) {
         console.error("Email Error:", error);
-        return false;
-    }
-};
-
-const formatPhoneNumber = (number) => {
-    let cleaned = number.toString().replace(/\D/g, '');
-  
-    if (!cleaned.startsWith('91') && cleaned.length === 10) {
-        cleaned = '91' + cleaned;
-    }
-
-    return `${cleaned}@c.us`;
-};
-
-
-export const sendPhoneOTP = async (phone, otp) => {
-    try {
-        // Check if client exists and is available
-        if (!whatsappClient) {
-            console.warn("[WhatsApp] Client not available. Cannot send OTP.");
-            return false;
-        }
-
-        const chatId = formatPhoneNumber(phone);
-        const message = `Your QuEventHub Verification Code is: *${otp}*`;
-        await whatsappClient.sendMessage(chatId, message);
-        console.log(`[WhatsApp] OTP sent to ${phone}`);
-        return true;
-
-    } catch (error) {
-        console.error("[WhatsApp] Error sending message:", error.message);
-        if (error.message.includes('not ready') || error.message.includes('not authenticated')) {
-            console.error("[WhatsApp] Client is not ready or authenticated. Please scan QR code first.");
-        }
         return false;
     }
 };

@@ -21,7 +21,7 @@ router.get('/users', async (_req, res) => {
 // Update user (admin can change basic fields and role)
 router.put('/users/:id', async (req, res) => {
   try {
-    const allowed = ['name', 'q_id', 'course', 'section', 'year', 'phone', 'role'];
+    const allowed = ['name', 'q_id', 'course', 'section', 'year', 'role'];
     const updates = {};
     allowed.forEach((key) => {
       if (req.body[key] !== undefined) updates[key] = req.body[key];

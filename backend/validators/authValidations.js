@@ -24,10 +24,7 @@ export const registerSchema = z.object({
         .refine((val) => validator.isAlphanumeric(val), {
             message: "Enter the valid section"
         }),
-    phone: z.string()
-        .refine((val) => validator.isMobilePhone(val, 'en-IN'), {
-            message: "Must be a valid Indian phone number"
-        }),
+
     password: z.string()
         .refine((val) => validator.isStrongPassword(val, {
             minLength: 8,
@@ -47,16 +44,16 @@ export const registerSchema = z.object({
 export const verifySchema = z.object({
     userId: z.string({ required_error: "User ID is required" }).min(1),
     otp: z.string({ required_error: "OTP is required" }).length(6, { message: "OTP must be exactly 6 digits" }),
-    type: z.enum(['email', 'phone'], { errorMap: () => ({ message: "Type must be either 'email' or 'phone'" }) })
+    type: z.enum(['email'], { errorMap: () => ({ message: "Type must be 'email'" }) }).optional()
 });
 
 export const resendSchema = z.object({
     userId: z.string({ required_error: "User ID is required" }).min(1),
-    type: z.enum(['email', 'phone'], { errorMap: () => ({ message: "Type must be either 'email' or 'phone'" }) })
+    type: z.enum(['email'], { errorMap: () => ({ message: "Type must be 'email'" }) }).optional()
 });
 
 export const loginSchema = z.object({
-    identifier: z.string({ required_error: "Identifier (Email, Phone, or Q-ID) is required" }).min(1),
+    identifier: z.string({ required_error: "Identifier (Email or Q-ID) is required" }).min(1),
     password: z.string({ required_error: "Password is required" }).min(1)
 });
 

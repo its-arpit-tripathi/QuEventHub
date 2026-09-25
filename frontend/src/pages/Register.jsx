@@ -8,12 +8,12 @@ export default function Register() {
   const [step, setStep] = useState(1); // 1: Register, 2: Verify OTP
   
   const [formData, setFormData] = useState({
-    name: "", email: "", phone: "", q_id: "", 
+    name: "", email: "", q_id: "", 
     course: "", year: "", section: "", 
     password: "", confirmPassword: ""
   });
   
-  const [otpData, setOtpData] = useState({ userId: null, emailOtp: "", phoneOtp: "" });
+  const [otpData, setOtpData] = useState({ userId: null, emailOtp: "" });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -59,7 +59,7 @@ export default function Register() {
     try {
       const res = await api.post("/auth/register", formData);
       setOtpData(prev => ({ ...prev, userId: res.data.userId }));
-      setMessage(res.data.message || "Registration successful! Please check your Email and WhatsApp.");
+      setMessage(res.data.message || "Registration successful! Please check your Email.");
       setStep(2);
     } catch (err) {
       const msg = err.response?.data?.message || 
@@ -79,8 +79,8 @@ export default function Register() {
     setError("");
     setMessage("");
 
-    if (!otpData.emailOtp && !otpData.phoneOtp) {
-      setError("Please enter at least one OTP.");
+    if (!otpData.emailOtp) {
+      setError("Please enter the Email OTP.");
       setLoading(false);
       return;
     }
@@ -108,25 +108,7 @@ export default function Register() {
         }
       }
 
-      // 2. Verify Phone OTP
-      if (otpData.phoneOtp) {
-        try {
-          const res = await api.post("/auth/verify", {
-            userId: otpData.userId,
-            otp: otpData.phoneOtp,
-            type: "phone",
-          });
-          successMessages.push("Phone Verified");
-
-          if (res.data.status === "fully_verified") {
-             handleLoginSuccess(res.data);
-             return;
-          }
-        } catch {
-           // Removed unused "innerErr" variable here
-          setError(prev => (prev ? prev + " | " : "") + "Phone OTP Invalid");
-        }
-      }
+      // Phone block removed
 
       if (successMessages.length > 0) {
         setMessage(successMessages.join(" & ") + " Successfully!");
@@ -169,11 +151,7 @@ export default function Register() {
                       value={formData.email} onChange={handleChange} 
                       className="p-3 border rounded focus:ring-2 focus:ring-green-500 outline-none" 
                     />
-                    <label className="text-xs font-semibold text-slate-600">Phone <span className="text-red-500">*</span></label><input 
-                      name="phone" type="tel" placeholder="Phone Number" required 
-                      value={formData.phone} onChange={handleChange} 
-                      className="p-3 border rounded focus:ring-2 focus:ring-green-500 outline-none" 
-                    />
+
                     <div className="flex gap-2">
                         <label className="text-xs font-semibold text-slate-600">Q-ID <span className="text-red-500">*</span></label><input 
                           name="q_id" type="text" placeholder="Q-ID" required 
@@ -228,18 +206,7 @@ export default function Register() {
                         </button>
                     </div>
 
-                    <div className="bg-slate-50 p-4 rounded border">
-                        <h3 className="text-lg font-semibold mb-2">Phone Verification (WhatsApp)</h3>
-                        <input 
-                            type="text" placeholder="Enter Phone OTP" 
-                            value={otpData.phoneOtp} 
-                            onChange={(e) => setOtpData({ ...otpData, phoneOtp: e.target.value })} 
-                            className="w-full p-3 border rounded focus:ring-2 focus:ring-blue-500 outline-none" 
-                        />
-                        <button type="button" onClick={() => handleResend('phone')} className="text-sm text-blue-500 hover:text-blue-700 mt-2">
-                            Resend Phone OTP
-                        </button>
-                    </div>
+
 
                     <button type="submit" disabled={loading} className="bg-blue-600 text-white p-3 rounded flex justify-center items-center mt-2 hover:bg-blue-700 transition">
                         {loading ? <Loader2 size={20} className="animate-spin" /> : "Verify & Complete Registration"}

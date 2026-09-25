@@ -5,7 +5,7 @@ import {
   Loader2, 
   User, 
   Mail, 
-  Phone, 
+
   BookOpen, 
   Calendar, 
   Hash, 
@@ -183,13 +183,7 @@ export default function Profile() {
                                     <span className="text-gray-600 text-sm truncate">{user.email}</span>
                                 </div>
                             </div>
-                            <div>
-                                <label className="text-xs text-gray-500 mb-1 block">Phone Number</label>
-                                <div className="flex items-center bg-white border border-gray-200 rounded-lg p-2.5 opacity-70 cursor-not-allowed">
-                                    <Phone size={16} className="text-gray-400 mr-3" />
-                                    <span className="text-gray-600 text-sm">{user.phone || "N/A"}</span>
-                                </div>
-                            </div>
+
                         </div>
                         <p className="text-xs text-gray-400 mt-4 italic">
                             * Contact details cannot be changed.

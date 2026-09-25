@@ -34,11 +34,7 @@ const userSchema = new Schema({
         required: true,
         trim: true
     },
-    phone: {
-        type: String,
-        required: true,
-        unique: true
-    },
+
     role: {
         type: String,
         enum: ['student', 'admin'],
@@ -55,9 +51,7 @@ const userSchema = new Schema({
     emailOtp: {
         type: String
     },
-    phoneOtp: {
-        type: String
-    },
+
     otpExpiry: {
         type: Date
     }

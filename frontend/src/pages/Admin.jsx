@@ -17,7 +17,6 @@ const emptyUserForm = {
   name: "",
   q_id: "",
   email: "",
-  phone: "",
   course: "",
   section: "",
   year: "",
@@ -87,7 +86,6 @@ const Admin = () => {
         name: user.name || "",
         q_id: user.q_id || "",
         email: user.email || "",
-        phone: user.phone || "",
         course: user.course || "",
         section: user.section || "",
         year: user.year || "",
@@ -411,11 +409,7 @@ const Admin = () => {
                         <input required className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
                             value={userForm.q_id} onChange={e => setUserForm({...userForm, q_id: e.target.value})} />
                     </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Phone <span className="text-red-500">*</span></label>
-                        <input required className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
-                            value={userForm.phone} onChange={e => setUserForm({...userForm, phone: e.target.value})} />
-                    </div>
+
                     
                     <div className="col-span-2 border-t border-gray-100 my-2"></div>
 

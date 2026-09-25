@@ -3,7 +3,7 @@ import UserModel from '../models/usersModel.js';
 import Club from '../models/Club.js';
 import { registerSchema, verifySchema, resendSchema, loginSchema, forgotSchema, resetSchema } from '../validators/authValidations.js';
 import jwt from 'jsonwebtoken';
-import { generateOTP, sendEmailOTP, sendPhoneOTP } from '../utils/notification.js';
+import { generateOTP, sendEmailOTP } from '../utils/notification.js';
 export const register = async (req, res) => {
     try {
         const result = registerSchema.safeParse(req.body);
@@ -11,39 +11,34 @@ export const register = async (req, res) => {
             return res.status(400).json({ errors: result.error.issues[0].message });
         }
 
-        const { name, email, password, q_id, phone, course, year, section } = result.data;
+        const { name, email, password, q_id, course, year, section } = result.data;
 
         const emailOtp = generateOTP();
-        const phoneOtp = generateOTP();
         const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await UserModel.create({
-            name, email, phone, section, q_id, year, course,
+            name, email, section, q_id, year, course,
             password: hashedPassword,
             emailOtp,
-            phoneOtp,
             otpExpiry,
             role: 'student'
         });
         if (!user) {
             return res.status(400).json({
-                message: "User with this email or phone already exists"
+                message: "User with this email already exists"
             })
         }
 
         try {
-            await Promise.all([
-                sendEmailOTP(email, emailOtp),
-                sendPhoneOTP(phone, phoneOtp)
-            ]);
+            await sendEmailOTP(email, emailOtp);
         } catch (err) {
-            console.error("Error sending OTPs:", err);
+            console.error("Error sending Email OTP:", err);
         }
 
         return res.status(201).json({
-            message: "Registration successful. Please verify your email and phone.",
+            message: "Registration successful. Please verify your email.",
             userId: user._id
         });
 
@@ -61,14 +56,13 @@ export const login = async (req, res) => {
 
         const { identifier, password } = result.data;
         if (!identifier || !password) {
-            return res.status(400).json({ message: "Please provide Q-ID/Email/Phone or Club ID and password" });
+            return res.status(400).json({ message: "Please provide Q-ID or Email or Club ID and password" });
         }
 
         // --- 1. Try to authenticate as regular user (student/admin) ---
         let user = await UserModel.findOne({
             $or: [
                 { email: identifier },
-                { phone: identifier },
                 { q_id: identifier }
             ]
         });
@@ -153,10 +147,10 @@ export const verifyUser = async (req, res) => {
             return res.status(400).json({ errors: result.error.issues[0].message });
         }
 
-        const { userId, otp, type } = result.data;
+        const { userId, otp } = result.data;
 
-        if (!userId || !otp || !['email', 'phone'].includes(type)) {
-            return res.status(400).json({ message: "Invalid request. Provide userId, otp, and type ('email' or 'phone')." });
+        if (!userId || !otp) {
+            return res.status(400).json({ message: "Invalid request. Provide userId and otp." });
         }
 
         const user = await UserModel.findById(userId);
@@ -170,51 +164,25 @@ export const verifyUser = async (req, res) => {
             return res.status(400).json({ message: "OTP has expired. Please request a resend." });
         }
 
-        let isCurrentVerificationSuccessful = false;
+        if (!user.emailOtp) return res.status(400).json({ message: "Email is already verified." });
 
-        if (type === 'email') {
-            if (!user.emailOtp) return res.status(400).json({ message: "Email is already verified." });
-
-            if (user.emailOtp === otp) {
-                user.emailOtp = null;
-                isCurrentVerificationSuccessful = true;
-            } else {
-                return res.status(400).json({ message: "Invalid Email OTP." });
-            }
+        if (user.emailOtp === otp) {
+            user.emailOtp = null;
+        } else {
+            return res.status(400).json({ message: "Invalid Email OTP." });
         }
-
-        else if (type === 'phone') {
-            if (!user.phoneOtp) return res.status(400).json({ message: "Phone is already verified." });
-
-            if (user.phoneOtp === otp) {
-                user.phoneOtp = null;
-                isCurrentVerificationSuccessful = true;
-            } else {
-                return res.status(400).json({ message: "Invalid Phone OTP." });
-            }
-        }
-        let token = null;
-        if (!user.emailOtp && !user.phoneOtp) {
-            user.isVerified = true;
-            user.otpExpiry = null;
-            token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        }
+        
+        user.isVerified = true;
+        user.otpExpiry = null;
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
         await user.save();
 
-        if (user.isVerified) {
-            return res.status(200).json({
-                message: "Account fully verified!",
-                status: "fully_verified",
-                token,
-            });
-        } else {
-            return res.status(200).json({
-                message: `${type === 'email' ? 'Email' : 'Phone'} verified successfully.`,
-                status: "partially_verified",
-                pending: type === 'email' ? "phone" : "email"
-            });
-        }
+        return res.status(200).json({
+            message: "Account fully verified!",
+            status: "fully_verified",
+            token,
+        });
 
     } catch (error) {
         return res.status(500).json({ message: "Verification failed", error: error.message });
@@ -229,11 +197,11 @@ export const resendOtp = async (req, res) => {
             return res.status(400).json({ errors: result.error.issues[0].message });
         }
 
-        const { userId, type } = result.data;
+        const { userId } = result.data;
 
-        if (!userId || !['email', 'phone'].includes(type)) {
+        if (!userId) {
             return res.status(400).json({
-                message: "Invalid request. Provide 'userId' and 'type' (email/phone)."
+                message: "Invalid request. Provide 'userId'."
             });
         }
 
@@ -249,32 +217,19 @@ export const resendOtp = async (req, res) => {
         const newOtp = generateOTP();
         const newExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-        if (type === 'email') {
-            if (user.emailOtp === null) {
-                return res.status(400).json({ message: "Email is already verified. You don't need to resend." });
-            }
-
-            user.emailOtp = newOtp;
-            user.otpExpiry = newExpiry;
-
-            await sendEmailOTP(user.email, newOtp);
+        if (user.emailOtp === null) {
+            return res.status(400).json({ message: "Email is already verified. You don't need to resend." });
         }
 
-        else if (type === 'phone') {
-            if (user.phoneOtp === null) {
-                return res.status(400).json({ message: "Phone is already verified. You don't need to resend." });
-            }
+        user.emailOtp = newOtp;
+        user.otpExpiry = newExpiry;
 
-            user.phoneOtp = newOtp;
-            user.otpExpiry = newExpiry;
-
-            await sendPhoneOTP(user.phone, newOtp);
-        }
+        await sendEmailOTP(user.email, newOtp);
 
         await user.save();
 
         return res.status(200).json({
-            message: `New OTP sent to your ${type}.`,
+            message: `New OTP sent to your email.`,
             otpExpiry: newExpiry
         });
 
@@ -361,13 +316,11 @@ export const updateUserProfile = async (req, res) => {
   try {
     const updates = { ...req.body };
 
-    // Prevent updating email, phone, password, and verification status
+    // Prevent updating email, password, and verification status
     delete updates.email;
-    delete updates.phone;
     delete updates.password;
     delete updates.isVerified; 
     delete updates.emailOtp;
-    delete updates.phoneOtp;
     delete updates.otpExpiry;
 
     const updatedUser = await UserModel.findByIdAndUpdate(
