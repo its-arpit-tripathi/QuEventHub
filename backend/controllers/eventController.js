@@ -1,5 +1,6 @@
 import Event from '../models/Event.js';
 import Registration from '../models/Registration.js';
+import { uploadImage } from '../utils/cloudinary.js';
 
 export const getEvents = async (req, res) => {
   try {
@@ -34,6 +35,10 @@ export const createClubEvent = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Only clubs can create events' });
     }
 
+    const imageUrl = req.file
+      ? await uploadImage(req.file, 'queventhub/events')
+      : req.body.imageUrl;
+
     const payload = {
       title: req.body.title,
       description: req.body.description,
@@ -42,11 +47,11 @@ export const createClubEvent = async (req, res) => {
       venue: req.body.venue,
       registrationDeadline: req.body.registrationDeadline || req.body.date,
       category: req.body.category,
-      isPaid: !!req.body.isPaid,
-      price: req.body.price || 0,
+      isPaid: req.body.isPaid === true || req.body.isPaid === 'true',
+      price: Number(req.body.price) || 0,
       paymentQrCode: req.body.paymentQrCode,
-      imageUrl: req.body.imageUrl,
-      capacity: req.body.capacity || 0,
+      imageUrl,
+      capacity: Number(req.body.capacity) || 0,
       organizer: req.club?.name || 'Club Event',
       club: req.user._id,
     };
@@ -75,6 +80,10 @@ export const updateClubEvent = async (req, res) => {
     }
 
     Object.assign(event, req.body);
+    if (req.body.isPaid !== undefined) event.isPaid = req.body.isPaid === true || req.body.isPaid === 'true';
+    if (req.body.price !== undefined) event.price = Number(req.body.price) || 0;
+    if (req.body.capacity !== undefined) event.capacity = Number(req.body.capacity) || 0;
+    if (req.file) event.imageUrl = await uploadImage(req.file, 'queventhub/events');
     await event.save();
 
     res.status(200).json({ success: true, data: event });

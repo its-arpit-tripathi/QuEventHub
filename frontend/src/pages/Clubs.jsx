@@ -180,7 +180,7 @@ const Clubs = () => {
                 </button>
            </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {filteredClubs.map((club) => {
               const imageSrc = club.imageUrl || club.image?.path;
               const joined = hasJoinedClub(club);
@@ -191,7 +191,7 @@ const Clubs = () => {
                   className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full"
                 >
                   {/* Image Header */}
-                  <div className="relative h-48 bg-gray-100 overflow-hidden">
+                  <div className="relative h-36 bg-gray-100 overflow-hidden">
                     {imageSrc ? (
                       <img
                         src={imageSrc}
@@ -213,12 +213,12 @@ const Clubs = () => {
                   </div>
 
                   {/* Card Content */}
-                  <div className="p-6 flex flex-col flex-grow">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-purple-700 transition-colors">
+                  <div className="flex flex-grow flex-col p-4">
+                    <h2 className="mb-2 text-xl font-bold text-gray-900 transition-colors group-hover:text-purple-700">
                       {club.name}
                     </h2>
 
-                    <div className="space-y-2 mb-4">
+                    <div className="mb-3 space-y-1.5">
                       <div className="flex items-center text-sm text-gray-500">
                         <Calendar className="w-4 h-4 mr-2 text-purple-500" />
                         <span className="truncate">{club.meeting || "Meeting TBD"}</span>
@@ -233,12 +233,12 @@ const Clubs = () => {
                       </div>
                     </div>
 
-                    <p className="text-gray-600 text-sm line-clamp-3 mb-6 flex-grow">
+                    <p className="mb-4 line-clamp-2 flex-grow text-sm text-gray-600">
                       {club.description}
                     </p>
 
                     {/* Action Footer */}
-                    <div className="pt-4 border-t border-gray-100 grid grid-cols-2 gap-3 mt-auto">
+                    <div className="mt-auto grid grid-cols-2 gap-2 border-t border-gray-100 pt-3">
                       <Link
                         to={`/clubs/${club._id}`}
                         className="flex items-center justify-center w-full py-2.5 bg-gray-50 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors"

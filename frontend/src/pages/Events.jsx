@@ -155,7 +155,7 @@ const Events = () => {
                 </button>
             </div>
         ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                 {filteredEvents.map((event) => {
                     const dateInfo = formatDate(event.date);
                     
@@ -165,7 +165,7 @@ const Events = () => {
                             className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full"
                         >
                             {/* Card Image Area */}
-                            <div className="relative h-48 bg-gray-200 overflow-hidden">
+                            <div className="relative h-36 bg-gray-200 overflow-hidden">
                                 {event.imageUrl || event.image?.path ? (
                                     <img 
                                         src={event.imageUrl || event.image?.path} 
@@ -193,12 +193,12 @@ const Events = () => {
                             </div>
 
                             {/* Content Area */}
-                            <div className="p-6 flex flex-col flex-grow">
-                                <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                            <div className="flex flex-grow flex-col p-4">
+                                <h2 className="mb-2 line-clamp-1 text-lg font-bold text-gray-900 transition-colors group-hover:text-blue-600">
                                     {event.title}
                                 </h2>
                                 
-                                <div className="space-y-2 mb-4">
+                                <div className="mb-3 space-y-1.5">
                                     <div className="flex items-center text-sm text-gray-500">
                                         <Clock className="w-4 h-4 mr-2 text-blue-500" />
                                         <span>{event.time || "Time TBD"}</span>
@@ -209,11 +209,11 @@ const Events = () => {
                                     </div>
                                 </div>
 
-                                <p className="text-gray-600 text-sm line-clamp-3 mb-6 flex-grow">
+                                <p className="mb-4 line-clamp-2 flex-grow text-sm text-gray-600">
                                     {event.description}
                                 </p>
 
-                                <div className="pt-4 border-t border-gray-100 flex items-center justify-between mt-auto">
+                                <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-3">
                                     <div className="flex flex-col">
                                         <span className="text-xs text-gray-400 font-medium uppercase">Price</span>
                                         <span className={`text-sm font-bold ${event.isPaid ? "text-green-600" : "text-gray-900"}`}>

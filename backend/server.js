@@ -8,6 +8,7 @@ import userRoute from './routes/userRoutes.js';
 import contactRoute from './routes/contactRoutes.js';
 import clubRoute from './routes/clubRoutes.js';
 import adminRoute from './routes/adminRoutes.js';
+import { errorHandler } from './middleware/errorMiddleware.js';
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -49,6 +50,17 @@ app.use('/api/user', userRoute);
 app.use('/api/contact', contactRoute);
 app.use('/api/clubs', clubRoute);
 app.use('/api/admin', adminRoute);
+
+app.use((error, req, res, next) => {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({ message: 'Image must be 2 MB or smaller.' });
+    }
+    if (error.message === 'Only image files are allowed.') {
+        return res.status(400).json({ message: error.message });
+    }
+    next(error);
+});
+app.use(errorHandler);
 
 // Connect to database first, then start server
 const startServer = async () => {

@@ -21,7 +21,10 @@ const emptyForm = {
   time: "",
   venue: "",
   imageUrl: "",
+  imageFile: null,
 };
+
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 
 const getCategoryColor = (cat) => {
   switch (cat) {
@@ -62,16 +65,40 @@ const AdminClubs = () => {
 
   const resetForm = () => setForm(emptyForm);
 
+  const handleImageChange = (event) => {
+    const image = event.target.files?.[0];
+    if (!image) return;
+    if (!image.type.startsWith("image/")) {
+      setError("Please select an image file.");
+      return;
+    }
+    if (image.size > MAX_IMAGE_SIZE) {
+      setError("Image must be 2 MB or smaller.");
+      event.target.value = "";
+      return;
+    }
+    setError("");
+    setForm((current) => ({ ...current, imageFile: image }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError("");
 
     try {
+      const payload = new FormData();
+      Object.entries(form).forEach(([key, value]) => {
+        if (key !== "_id" && key !== "imageFile" && value !== undefined && value !== null) {
+          payload.append(key, value);
+        }
+      });
+      if (form.imageFile) payload.append("image", form.imageFile);
+
       if (form._id) {
-        await api.put(`/clubs/${form._id}`, form);
+        await api.put(`/clubs/${form._id}`, payload);
       } else {
-        const res = await api.post("/clubs", form);
+        const res = await api.post("/clubs", payload);
         const creds = res.data?.data?.credentials;
         if (creds) {
           showToast(`Club created. ID: ${creds.clubId} | Password: ${creds.password}`, "success");
@@ -108,6 +135,7 @@ const AdminClubs = () => {
       time: club.time || "",
       venue: club.venue || "",
       imageUrl: club.imageUrl || "",
+      imageFile: null,
     });
 
   const inputClasses =
@@ -167,13 +195,9 @@ const AdminClubs = () => {
                         </select>
                     </div>
                      <div>
-                        <label className={labelClasses}>Image URL</label>
-                        <input
-                            placeholder="https://..."
-                            value={form.imageUrl}
-                            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                            className={inputClasses}
-                        />
+                      <label className={labelClasses}>Club Image (max 2 MB)</label>
+                      <input type="file" accept="image/*" onChange={handleImageChange} className={inputClasses} />
+                      {form.imageFile && <p className="mt-1 text-xs text-green-600">{form.imageFile.name}</p>}
                     </div>
                 </div>
 

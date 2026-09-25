@@ -1,5 +1,6 @@
 import Club from '../models/Club.js';
 import bcrypt from 'bcrypt';
+import { uploadImage } from '../utils/cloudinary.js';
 
 const buildClubQuery = ({ type, q }) => {
   const query = {};
@@ -39,6 +40,10 @@ export const getClubs = async (req, res) => {
 
 export const createClub = async (req, res) => {
   try {
+    const imageUrl = req.file
+      ? await uploadImage(req.file, 'queventhub/clubs')
+      : req.body.imageUrl;
+
     // Generate login credentials for this club
     const rawClubId = `CLB${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
     const rawPassword = Math.random().toString(36).substring(2, 10);
@@ -51,7 +56,7 @@ export const createClub = async (req, res) => {
       meeting: req.body.meeting,
       time: req.body.time,
       venue: req.body.venue,
-      imageUrl: req.body.imageUrl,
+      imageUrl,
       contactEmail: req.body.contactEmail,
       clubId: rawClubId,
       passwordHash,
@@ -93,6 +98,10 @@ export const updateClub = async (req, res) => {
     const updates = {
       ...req.body,
     };
+
+    if (req.file) {
+      updates.imageUrl = await uploadImage(req.file, 'queventhub/clubs');
+    }
 
     if (updates.category) {
       updates.category = updates.category.toLowerCase();

@@ -26,6 +26,7 @@ import {
 } from '../controllers/eventController.js';
 import { protect, requireClub } from '../middleware/authMiddleware.js';
 import Event from '../models/Event.js';
+import imageUpload from '../middleware/imageUpload.js';
 
 const router = express.Router();
 
@@ -34,8 +35,8 @@ router.get('/', getEvents);
 
 // Club-managed events (club auth required)
 router.get('/club', protect, requireClub, getClubEvents);
-router.post('/club', protect, requireClub, createClubEvent);
-router.put('/club/:id', protect, requireClub, updateClubEvent);
+router.post('/club', protect, requireClub, imageUpload.single('image'), createClubEvent);
+router.put('/club/:id', protect, requireClub, imageUpload.single('image'), updateClubEvent);
 router.delete('/club/:id', protect, requireClub, deleteClubEvent);
 router.get('/club/:id/registrations', protect, requireClub, getClubEventRegistrations);
 router.post('/club/:id/attendance/:registrationId', protect, requireClub, markAttendance);

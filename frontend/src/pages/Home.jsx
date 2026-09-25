@@ -1,9 +1,24 @@
-import { createElement } from "react";
-import { ArrowRight, CalendarDays, Compass, Users } from "lucide-react";
+import { createElement, useEffect, useState } from "react";
+import { ArrowRight, CalendarDays, Compass, Loader2, MapPin, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import api from "../api";
 import bg from "../assets/QUimage.jpg";
 
 export default function Home() {
+  const [events, setEvents] = useState([]);
+  const [clubs, setClubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([api.get("/events"), api.get("/clubs")])
+      .then(([eventsResponse, clubsResponse]) => {
+        setEvents((eventsResponse.data.data || eventsResponse.data || []).slice(0, 3));
+        setClubs((clubsResponse.data.data || clubsResponse.data || []).slice(0, 3));
+      })
+      .catch((error) => console.error("Unable to load home previews:", error))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className="min-h-[calc(100vh-5rem)] bg-[#f6f8fb]">
       <section className="relative isolate overflow-hidden bg-[#102a43] text-white">
@@ -62,8 +77,79 @@ export default function Home() {
           </div>
         ))}
       </section>
+
+      <section className="mx-auto max-w-7xl space-y-12 px-6 pb-20 sm:px-10 lg:px-12">
+        <PreviewSection title="Upcoming events" subtitle="Make your next campus plan count." link="/events" linkLabel="Show more events">
+          {loading ? <PreviewLoading /> : events.length === 0 ? <PreviewEmpty label="No events available yet." /> : (
+            <div className="grid gap-5 md:grid-cols-3">
+              {events.map((event) => (
+                <Link key={event._id} to={`/events/${event._id}`} className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                  <div className="relative h-36 overflow-hidden bg-gradient-to-br from-blue-600 to-cyan-500">
+                    {event.imageUrl && <img src={event.imageUrl} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />}
+                    <span className="absolute left-4 top-4 rounded-full bg-slate-950/65 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">{event.category || "Campus"}</span>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="truncate font-['Space_Grotesk'] text-lg font-bold text-slate-900 group-hover:text-blue-600">{event.title}</h3>
+                    <p className="mt-3 flex items-center gap-2 text-sm text-slate-500"><CalendarDays size={16} className="text-blue-600" /> {formatDate(event.date)}</p>
+                    <p className="mt-2 flex items-center gap-2 truncate text-sm text-slate-500"><MapPin size={16} className="text-cyan-600" /> {event.venue || "Venue to be announced"}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </PreviewSection>
+
+        <PreviewSection title="Clubs to discover" subtitle="Find your people and make campus yours." link="/clubs" linkLabel="Show more clubs">
+          {loading ? <PreviewLoading /> : clubs.length === 0 ? <PreviewEmpty label="No clubs available yet." /> : (
+            <div className="grid gap-5 md:grid-cols-3">
+              {clubs.map((club) => (
+                <Link key={club._id} to={`/clubs/${club._id}`} className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                  <div className="relative flex h-36 items-end overflow-hidden bg-gradient-to-br from-fuchsia-500 to-purple-700 p-5">
+                    {club.imageUrl && <img src={club.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 to-transparent" />
+                    <span className="relative rounded-full bg-slate-950/55 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">{club.category || "Community"}</span>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="truncate font-['Space_Grotesk'] text-lg font-bold text-slate-900 group-hover:text-purple-600">{club.name}</h3>
+                    <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{club.description || "Connect with students who share your interests."}</p>
+                    <p className="mt-3 flex items-center gap-2 text-sm text-slate-500"><Users size={16} className="text-purple-600" /> {club.membersCount || club.members?.length || 0} active members</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </PreviewSection>
+      </section>
     </div>
   );
+}
+
+function formatDate(date) {
+  if (!date) return "Date to be announced";
+  return new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+function PreviewSection({ title, subtitle, link, linkLabel, children }) {
+  return (
+    <div>
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-slate-950">{title}</h2>
+          <p className="mt-1 text-slate-500">{subtitle}</p>
+        </div>
+        <Link to={link} className="inline-flex items-center gap-2 font-semibold text-blue-600 hover:text-blue-700">{linkLabel} <ArrowRight size={17} /></Link>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function PreviewLoading() {
+  return <div className="flex justify-center rounded-2xl border border-slate-200 bg-white py-12"><Loader2 className="animate-spin text-blue-600" /></div>;
+}
+
+function PreviewEmpty({ label }) {
+  return <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-12 text-center text-slate-500">{label}</div>;
 }
 
 
