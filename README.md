@@ -1,39 +1,52 @@
-# QuEventHub 🎓🎉
+<div align="center">
+  <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop" alt="QuEventHub Banner" width="100%" style="border-radius: 12px; margin-bottom: 20px;">
+  
+  <h1>🎓 QuEventHub</h1>
+  <p><b>A modern, full-stack campus event and community management platform.</b></p>
 
-QuEventHub is a modern, full-stack campus event and community management platform. It allows students to discover events, join clubs, and stay engaged with campus life, while providing administrators and club organizers with the tools they need to manage their communities.
+  <p>
+    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+    <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" />
+    <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express.js" />
+    <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  </p>
+
+  <p>
+    <i>Built exclusively for the <b>75way Technologies</b> project submission.</i>
+  </p>
+</div>
+
+---
+
+> **QuEventHub** allows students to discover events, join clubs, and stay engaged with campus life, while providing administrators and club organizers with the powerful tools they need to manage their communities seamlessly.
 
 ## ✨ Features
 
-- **Role-Based Access Control:** Separate dashboards and permissions for **Students**, **Admins**, and **Clubs**.
-- **Discover Events:** Browse, filter, and search upcoming technical, cultural, and sports events happening on campus.
-- **Club Communities:** View all active clubs, check their schedules, and join them to become an active member.
-- **Admin Dashboard:** Centralized control for administrators to manage users, create new clubs, and moderate content.
-- **Club Dashboard:** Dedicated space for club organizers to create and manage their own events.
-- **Secure Authentication:** JWT-based email authentication and session management.
+- 🔐 **Role-Based Access Control:** Separate dashboards and permissions for **Students**, **Admins**, and **Clubs**.
+- 📅 **Discover Events:** Browse, filter, and search upcoming technical, cultural, and sports events happening on campus.
+- 🤝 **Club Communities:** View all active clubs, check their schedules, and join them to become an active member.
+- 🛡️ **Admin Dashboard:** Centralized control for administrators to manage users, create new clubs, and moderate content.
+- 🎭 **Club Dashboard:** Dedicated space for club organizers to create and manage their own events.
+- 🔑 **Secure Authentication:** JWT-based email authentication and secure session management.
 
-## 🚀 Tech Stack
-
-- **Frontend:** React.js, Vite, Tailwind CSS, React Router, Axios, Lucide Icons.
-- **Backend:** Node.js, Express.js.
-- **Database:** MongoDB (Mongoose).
-- **Authentication:** JSON Web Tokens (JWT), bcrypt for password hashing.
-- **Image Storage:** Cloudinary.
+---
 
 ## 🏗️ System Architecture & Data Flow
 
 QuEventHub is built on a modern **Client-Server Architecture** decoupling the presentation layer from the business logic.
 
-### 1. The Presentation Layer (Frontend)
+### 🎨 1. The Presentation Layer (Frontend)
 - **Framework & Build Tool:** React.js powered by Vite for lightning-fast HMR and optimized production bundling.
 - **State & Routing:** Uses React Router DOM for Client-Side Routing (SPA). Authentication state is persisted locally (localStorage) and managed across components to conditionally render UI based on the user's role (Student, Admin, Club).
 - **Network Layer:** Axios is configured with interceptors to automatically attach JWT tokens to the `Authorization` header of every request, ensuring secure communication.
 
-### 2. The API Layer (Backend)
+### ⚙️ 2. The API Layer (Backend)
 - **Core Server:** Node.js running an Express.js server, exposing a RESTful API.
 - **Security & Auth:** Utilizes `bcrypt` for one-way password hashing before saving to the database. Authentication is handled statelessly via **JSON Web Tokens (JWT)**. A custom authentication middleware (`authMiddleware.js`) intercepts protected routes, validates the JWT, and enforces role-based access control (RBAC).
 - **File Handling:** `multer` intercepts multipart/form-data for image uploads, processes the stream in memory, and pushes the buffer to **Cloudinary** for scalable cloud storage.
 
-### 3. The Data Layer
+### 🗄️ 3. The Data Layer
 - **Database:** MongoDB acts as the primary NoSQL document store. 
 - **ORM (Object Relational Mapping):** Mongoose enforces strict schema definitions, data validation, and manages relationships (e.g., embedding User ObjectIds inside Club `members` arrays or referencing Clubs in Event documents).
 
@@ -45,28 +58,30 @@ QuEventHub is built on a modern **Client-Server Architecture** decoupling the pr
 5. **Controller Logic:** `clubController.js` fetches the club via Mongoose, verifies the user isn't already a member, pushes the user's ID to the array, and saves to MongoDB.
 6. **Response:** Returns a `200 OK`, and the React UI updates instantly.
 
-### 📂 Project Structure
+---
 
-The repository is divided into two main folders: `frontend` and `backend`.
+## 📂 Project Structure
+
+The repository is divided into two main folders: `frontend` and `backend`, enforcing clean separation of concerns.
 
 ```text
 QuEventHub/
 │
-├── backend/                  # Node.js + Express Backend
-│   ├── controllers/          # Business logic for routes (auth, clubs, events, etc.)
+├── backend/                  # Node.js + Express API
+│   ├── controllers/          # Business logic for routes
 │   ├── database/             # MongoDB connection setup
-│   ├── middleware/           # JWT verification, Error handling, Multer (image uploads)
+│   ├── middleware/           # JWT verification, Error handling, Multer
 │   ├── models/               # Mongoose schemas (User, Event, Club)
 │   ├── routes/               # API endpoint definitions
-│   ├── utils/                # Helper scripts (Database seeding, Cloudinary config)
-│   └── server.js             # Main entry point for the backend API
+│   ├── utils/                # Helper scripts (DB seeding, Cloudinary)
+│   └── server.js             # Main entry point for the API
 │
-├── frontend/                 # React + Vite Frontend
+├── frontend/                 # React + Vite Application
 │   ├── src/
-│   │   ├── api.js            # Axios configuration & request interceptors
-│   │   ├── components/       # Reusable UI components (Navbar, Footer, Modals)
-│   │   ├── pages/            # Full-page views (Login, Register, Dashboard, Clubs)
-│   │   ├── utils/            # Frontend helpers (Toast notifications, formatting)
+│   │   ├── api.js            # Axios configuration & interceptors
+│   │   ├── components/       # Reusable UI components
+│   │   ├── pages/            # Full-page views (Dashboard, Clubs, etc.)
+│   │   ├── utils/            # Frontend helpers
 │   │   ├── App.jsx           # Main React Router setup
 │   │   └── main.jsx          # React DOM mounting
 │   ├── index.html            # HTML template
@@ -74,6 +89,8 @@ QuEventHub/
 │
 └── README.md
 ```
+
+---
 
 ## 📦 Local Setup
 
@@ -128,18 +145,22 @@ npm run dev
 
 The application will be available at `http://localhost:5173`.
 
+---
+
 ## 🧪 Demo Accounts
 
 The database automatically seeds demo accounts on startup. You can use the quick-login buttons on the login page or manually enter these credentials:
 
 | Role | Login ID / Email | Password |
 | :--- | :--- | :--- |
-| **Student** | student@example.com | Student@123 |
-| **Admin** | admin@example.com | Admin@123 |
-| **Tech Club** | CLBTECH1 | Club@123 |
-| **Culture Club** | CLBCULT1 | Club@123 |
-| **Sports Club** | CLBSPRT1 | Club@123 |
-| **Music Club** | CLBMUS1 | Club@123 |
+| **Student** | `student@example.com` | `Student@123` |
+| **Admin** | `admin@example.com` | `Admin@123` |
+| **Tech Club** | `CLBTECH1` | `Club@123` |
+| **Culture Club** | `CLBCULT1` | `Club@123` |
+| **Sports Club** | `CLBSPRT1` | `Club@123` |
+| **Music Club** | `CLBMUS1` | `Club@123` |
+
+---
 
 ## 🌍 Deployment Strategy & CI/CD
 
@@ -153,14 +174,16 @@ Render provides a seamless, Docker-like containerized environment for Node.js ap
    - **Build Command:** `npm install`
    - **Start Command:** `npm start`
 3. **Environment Setup:** Copy all variables from your local `.env` into the Render dashboard's Environment section.
-4. **Keep-Alive Strategy:** Render's free tier spins down idle instances after 15 minutes, which causes a "cold start" delay (up to 50s) on the next request. To prevent this, the backend exposes a `/ping` route. You can set up a free ping service (like [cron-job.org](https://cron-job.org)) to hit `https://your-backend-app.onrender.com/ping` every 10 minutes, ensuring the server stays awake 24/7.
+4. **Keep-Alive Strategy:** Render's free tier spins down idle instances after 15 minutes. The backend exposes a `/ping` route that can be hit via a free ping service (like [cron-job.org](https://cron-job.org)) every 10 minutes to ensure the server stays awake 24/7.
 
 ### Frontend Deployment (Vercel)
 Vercel's Edge Network ensures the React Single Page Application (SPA) is delivered to users globally with near-zero latency.
 1. **Repository Link:** Import your repository into the Vercel dashboard.
 2. **Build Settings:** Vercel will auto-detect Vite. Set the **Root Directory** to `frontend`.
-3. **Environment Injection:** 
-   - Add `VITE_API_URL` to the Environment Variables.
-   - **Value:** `https://your-backend-app.onrender.com/api` (Ensure there is no trailing slash).
-   - *Note:* Because Vite bundles environment variables at build time, any changes to this variable require a manual **Redeploy** in the Vercel dashboard.
-4. **SPA Routing:** The `vercel.json` file at the root of the frontend folder contains a rewrite rule (`"source": "/(.*)", "destination": "/index.html"`). This intercepts all URL paths and routes them to `index.html` so React Router can take over client-side, preventing 404 errors on direct links.
+3. **Environment Injection:** Add `VITE_API_URL` to the Environment Variables pointing to your live Render backend (e.g., `https://your-backend.onrender.com/api`).
+4. **SPA Routing:** The `vercel.json` file at the root of the frontend folder contains a rewrite rule intercepting all URL paths and routing them to `index.html` so React Router can take over client-side, preventing 404 errors on direct links.
+
+<div align="center">
+  <br />
+  <p><i>Developed for 75way Technologies</i></p>
+</div>
