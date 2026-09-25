@@ -11,6 +11,7 @@ const ClubDetails = () => {
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
     fetchClub();
@@ -108,19 +109,25 @@ const ClubDetails = () => {
       <div className="prose mb-6">{club.description}</div>
 
       <div className="flex gap-4 flex-wrap">
-        <button
-          onClick={handleJoin}
-          disabled={joining || joined}
-          className={`flex items-center gap-2 rounded px-4 py-2 transition disabled:cursor-not-allowed ${
-            joined
-              ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
-              : "bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-60"
-          }`}
-        >
-          {joining && <Loader2 size={18} className="animate-spin" />}
-          {joined && <Check size={18} />}
-          {joined ? "Joined" : "Join Club"}
-        </button>
+        {user.role === "admin" || user.role === "club" ? (
+          <div className="flex items-center gap-2 rounded px-4 py-2 bg-slate-100 text-slate-500 border border-slate-200">
+            Joining is only for students
+          </div>
+        ) : (
+          <button
+            onClick={handleJoin}
+            disabled={joining || joined}
+            className={`flex items-center gap-2 rounded px-4 py-2 transition disabled:cursor-not-allowed ${
+              joined
+                ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                : "bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-60"
+            }`}
+          >
+            {joining && <Loader2 size={18} className="animate-spin" />}
+            {joined && <Check size={18} />}
+            {joined ? "Joined" : "Join Club"}
+          </button>
+        )}
 
         <button
           onClick={() => navigate("/clubs")}

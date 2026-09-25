@@ -197,6 +197,10 @@ export const registerForEvent = async (req, res) => {
         .json({ success: false, message: 'Event not found' });
     }
 
+    if (req.user.role === 'admin' || req.user.role === 'club') {
+      return res.status(403).json({ success: false, message: 'Clubs and Admins cannot register for events.' });
+    }
+
 
     if (new Date() > new Date(event.registrationDeadline)) {
       return res.status(400).json({ 

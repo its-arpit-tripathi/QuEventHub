@@ -146,6 +146,10 @@ export const joinClub = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Club not found' });
     }
 
+    if (req.user.role === 'admin' || req.user.role === 'club') {
+      return res.status(403).json({ success: false, message: 'Clubs and Admins cannot join other clubs.' });
+    }
+
     const alreadyMember = club.members.some(
       (memberId) => memberId.toString() === req.user._id.toString()
     );

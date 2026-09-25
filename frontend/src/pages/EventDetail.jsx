@@ -14,6 +14,7 @@ export default function EventDetail() {
   const [regStatus, setRegStatus] = useState(initialStatus);
   const [transactionId, setTransactionId] = useState("");
   const [isQrExpanded, setIsQrExpanded] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
     fetchEvent();
@@ -182,21 +183,27 @@ export default function EventDetail() {
                     </div>
                 )}
                 
-                <button 
-                    onClick={handleRegistration}
-              disabled={regStatus.state === "pending"}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition flex justify-center items-center disabled:opacity-60"
-                >
-              {regStatus.state === "pending" ? (
-                <>
-                  <Loader2 size={24} className="animate-spin mr-2" /> Submitting...
-                </>
-              ) : isPaid ? (
-                "Submit Registration"
-              ) : (
-                "One-Click Register"
-              )}
-                </button>
+                {user.role === "admin" || user.role === "club" ? (
+                  <div className="w-full bg-slate-100 text-slate-500 py-3 rounded-lg text-lg font-semibold text-center border border-slate-200">
+                    Registration is only for students
+                  </div>
+                ) : (
+                  <button 
+                      onClick={handleRegistration}
+                      disabled={regStatus.state === "pending"}
+                      className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition flex justify-center items-center disabled:opacity-60"
+                  >
+                    {regStatus.state === "pending" ? (
+                      <>
+                        <Loader2 size={24} className="animate-spin mr-2" /> Submitting...
+                      </>
+                    ) : isPaid ? (
+                      "Submit Registration"
+                    ) : (
+                      "One-Click Register"
+                    )}
+                  </button>
+                )}
             </>
           )}
       </div>
