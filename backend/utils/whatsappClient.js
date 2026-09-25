@@ -9,12 +9,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // ----- FIXED CHROME PATH -----
-const chromeExecutablePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+// Check if running on Render
+const isRender = process.env.RENDER === 'true';
 
-// ----- FIXED PUPPETEER CONFIG -----
 const puppeteerConfig = {
-    headless: false,   // WhatsApp Web does NOT work reliably in headless
-    executablePath: chromeExecutablePath,
+    // Must be headless on Render/Cloud servers
+    headless: isRender ? true : false,
     args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -24,7 +24,13 @@ const puppeteerConfig = {
     ]
 };
 
-console.log(`[WhatsApp] Using Chrome at: ${chromeExecutablePath}`);
+// Only use local Chrome executable if NOT on Render
+if (!isRender) {
+    puppeteerConfig.executablePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+    console.log(`[WhatsApp] Using local Chrome at: ${puppeteerConfig.executablePath}`);
+} else {
+    console.log(`[WhatsApp] Running on Render - Using bundled Chromium in headless mode.`);
+}
 
 const client = new Client({
     authStrategy: new LocalAuth(),
