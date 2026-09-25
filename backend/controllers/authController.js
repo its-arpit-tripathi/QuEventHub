@@ -102,7 +102,7 @@ export const login = async (req, res) => {
         // --- 2. Fallback: authenticate as club using clubId or contactEmail ---
         const club = await Club.findOne({
             $or: [
-                { clubId: identifier },
+                { clubId: new RegExp(`^${identifier}$`, 'i') },
                 { contactEmail: identifier.toLowerCase() }
             ]
         });
