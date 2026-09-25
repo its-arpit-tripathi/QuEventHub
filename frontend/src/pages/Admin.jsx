@@ -177,31 +177,31 @@ const Admin = () => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 pt-24 sm:p-6 sm:pt-24">
+    <div className="min-h-screen bg-slate-50 p-4 pt-5 sm:p-6 sm:pt-6">
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Header Stats */}
-        <div className="rounded-2xl bg-gradient-to-br from-[#102a43] via-[#1e3a8a] to-[#2563eb] p-6 text-white shadow-xl sm:p-8">
+        <div className="rounded-3xl bg-gradient-to-br from-[#102a43] via-[#1e3a8a] to-[#2563eb] p-6 text-white shadow-xl sm:p-8">
           <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-blue-200">Admin workspace</p>
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Keep QuEventHub moving.</h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-blue-100">Review users, manage clubs, and keep the campus calendar healthy.</p>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                 <div className="p-3 bg-blue-50 text-blue-600 rounded-lg"><Users size={24} /></div>
                 <div>
                     <p className="text-sm text-gray-500 font-medium">Total Users</p>
                     <h3 className="text-2xl font-bold text-gray-900">{users.length}</h3>
                 </div>
             </div>
-            <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                 <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg"><Tent size={24} /></div>
                 <div>
                     <p className="text-sm text-gray-500 font-medium">Total Clubs</p>
                     <h3 className="text-2xl font-bold text-gray-900">{clubs.length}</h3>
                 </div>
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                <div>
                  <p className="text-sm text-gray-500 font-medium">Quick Actions</p>
                  <button onClick={() => navigate("/admin/clubs")} className="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium hover:underline">
@@ -216,20 +216,27 @@ const Admin = () => {
         )}
 
         {/* Main Content */}
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Platform directory</p>
+            <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">Users and clubs</h2>
+          </div>
+          <span className="hidden text-sm text-slate-500 sm:block">Search, review, and manage records</span>
+        </div>
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5">
           
           {/* Toolbar */}
-          <div className="p-5 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex bg-gray-100 p-1 rounded-lg self-start">
+          <div className="flex flex-col justify-between gap-4 border-b border-slate-100 p-4 md:flex-row md:items-center sm:p-5">
+            <div className="flex self-start rounded-xl bg-slate-100 p-1">
               <button 
                 onClick={() => { setActiveTab("users"); setSearchQuery(""); }}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'users' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${activeTab === 'users' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 Users
               </button>
               <button 
                 onClick={() => { setActiveTab("clubs"); setSearchQuery(""); }}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'clubs' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${activeTab === 'clubs' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 Clubs
               </button>
@@ -376,36 +383,36 @@ const Admin = () => {
 
       {/* User Modal */}
       {isUserModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h3 className="text-lg font-semibold text-gray-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm">
+          <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 px-7 py-5 sm:px-9">
+                <h3 className="text-2xl font-bold tracking-tight text-slate-900">
                     {editingUserId ? "Edit User Profile" : "Register New Student"}
                 </h3>
-                <button onClick={() => setIsUserModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                <button onClick={() => setIsUserModalOpen(false)} className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Close user form">
                     <X size={20} />
                 </button>
             </div>
             
-            <form onSubmit={handleUserSubmit} className="p-6">
+            <form onSubmit={handleUserSubmit} className="p-7 sm:p-9">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="col-span-2 md:col-span-1">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Full Name</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Full Name <span className="text-red-500">*</span></label>
                         <input required className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
                             value={userForm.name} onChange={e => setUserForm({...userForm, name: e.target.value})} />
                     </div>
                     <div className="col-span-2 md:col-span-1">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
                         <input required type="email" className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
                             value={userForm.email} onChange={e => setUserForm({...userForm, email: e.target.value})} />
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Q-ID (Roll No)</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Q-ID (Roll No) <span className="text-red-500">*</span></label>
                         <input required className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
                             value={userForm.q_id} onChange={e => setUserForm({...userForm, q_id: e.target.value})} />
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Phone</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Phone <span className="text-red-500">*</span></label>
                         <input required className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
                             value={userForm.phone} onChange={e => setUserForm({...userForm, phone: e.target.value})} />
                     </div>
@@ -413,27 +420,27 @@ const Admin = () => {
                     <div className="col-span-2 border-t border-gray-100 my-2"></div>
 
                     <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Course</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Course <span className="text-red-500">*</span></label>
                         <input required placeholder="e.g. B.Tech" className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
                             value={userForm.course} onChange={e => setUserForm({...userForm, course: e.target.value})} />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-medium text-gray-700 mb-1">Year</label>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">Year <span className="text-red-500">*</span></label>
                             <input required placeholder="1" className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
                                 value={userForm.year} onChange={e => setUserForm({...userForm, year: e.target.value})} />
                         </div>
                         <div>
-                            <label className="block text-xs font-medium text-gray-700 mb-1">Section</label>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">Section <span className="text-red-500">*</span></label>
                             <input required placeholder="A" className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
                                 value={userForm.section} onChange={e => setUserForm({...userForm, section: e.target.value})} />
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-8 flex justify-end gap-3">
-                    <button type="button" onClick={() => setIsUserModalOpen(false)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
-                    <button type="submit" disabled={savingUser} className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+                <div className="mt-8 flex flex-col-reverse justify-end gap-3 border-t border-slate-100 pt-6 sm:flex-row">
+                  <button type="button" onClick={() => setIsUserModalOpen(false)} className="rounded-xl border border-slate-200 px-6 py-3 text-slate-600 transition hover:bg-slate-50">Cancel</button>
+                  <button type="submit" disabled={savingUser} className="rounded-xl bg-indigo-600 px-7 py-3 font-bold text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 disabled:opacity-50">
                         {savingUser ? "Saving..." : editingUserId ? "Update User" : "Create User"}
                     </button>
                 </div>

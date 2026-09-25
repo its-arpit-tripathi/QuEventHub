@@ -166,6 +166,13 @@ const Clubs = () => {
 
       {/* Clubs Grid */}
       <div className="max-w-7xl mx-auto">
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-purple-600">Community directory</p>
+            <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">Find your people</h2>
+          </div>
+          <span className="hidden text-sm text-slate-500 sm:block">Explore communities built around your interests</span>
+        </div>
         {loading ? (
            <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 size={48} className="animate-spin text-purple-600 mb-4" />
@@ -196,10 +203,10 @@ const Clubs = () => {
               return (
                 <div
                   key={club._id}
-                  className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full"
+                  className="uniform-card group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-xl"
                 >
                   {/* Image Header */}
-                  <div className="relative h-36 bg-gray-100 overflow-hidden">
+                  <div className="uniform-card-media relative overflow-hidden bg-gray-100">
                     {imageSrc ? (
                       <img
                         src={imageSrc}
@@ -223,7 +230,7 @@ const Clubs = () => {
                   </div>
 
                   {/* Card Content */}
-                  <div className="flex flex-grow flex-col p-4">
+                  <div className="uniform-card-body flex-grow p-4">
                     <h2 className="mb-2 text-xl font-bold text-gray-900 transition-colors group-hover:text-purple-700">
                       {club.name}
                     </h2>

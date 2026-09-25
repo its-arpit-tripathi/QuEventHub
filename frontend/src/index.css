@@ -36,6 +36,21 @@ a {
 	-webkit-tap-highlight-color: transparent;
 }
 
+button,
+a,
+select,
+input[type="file"],
+[role="button"] {
+	cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+	cursor: not-allowed;
+}
+
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
@@ -48,5 +63,35 @@ textarea:focus-visible {
 ::selection {
 	color: #fff;
 	background: #2563eb;
+}
+
+.uniform-card {
+	min-height: 360px;
+	display: flex;
+	flex-direction: column;
+}
+
+.uniform-card-media {
+	height: 148px;
+	min-height: 148px;
+}
+
+.uniform-card-body {
+	min-height: 212px;
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+}
+
+.student-card {
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+@media (max-width: 640px) {
+	.uniform-card {
+		min-height: 360px;
+	}
 }
 

@@ -76,7 +76,7 @@ export default function Login() {
           <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: `url(${bg})` }} />
           <div className="absolute inset-0 bg-gradient-to-br from-[#102a43] via-[#102a43]/90 to-[#0b7285]/70" />
           <div className="relative">
-            <Link to="/" className="inline-flex items-center gap-3 text-lg font-bold tracking-tight">
+            <Link to="/dashboard" className="inline-flex items-center gap-3 text-lg font-bold tracking-tight">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-400 text-lg text-slate-950">Q</span>
               QuEventHub
             </Link>
@@ -94,7 +94,7 @@ export default function Login() {
         <div className="flex items-center p-6 sm:p-8 lg:p-10">
           <div className="w-full max-w-md mx-auto">
             <div className="mb-5">
-              <Link to="/" className="mb-5 inline-flex items-center gap-2 text-sm font-bold text-slate-700 lg:hidden">
+              <Link to="/dashboard" className="mb-5 inline-flex items-center gap-2 text-sm font-bold text-slate-700 lg:hidden">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">Q</span>
                 QuEventHub
               </Link>
@@ -116,6 +116,7 @@ export default function Login() {
             
             {/* Identifier Input */}
             <div className="relative group">
+              <label className="mb-1.5 block text-xs font-semibold text-slate-600">Identifier <span className="text-red-500">*</span></label>
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
                 <User size={18} />
               </div>
@@ -133,6 +134,7 @@ export default function Login() {
 
             {/* Password Input */}
             <div className="relative group">
+              <label className="mb-1.5 block text-xs font-semibold text-slate-600">Password <span className="text-red-500">*</span></label>
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
                 <Lock size={18} />
               </div>

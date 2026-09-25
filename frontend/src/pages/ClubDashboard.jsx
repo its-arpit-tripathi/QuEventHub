@@ -178,15 +178,15 @@ const ClubDashboard = () => {
     }
   };
 
-  const inputClasses = "w-full p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all";
-  const labelClasses = "block text-xs font-medium text-gray-500 mb-1";
+  const inputClasses = "w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-base text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100";
+  const labelClasses = "mb-2 block text-sm font-medium text-slate-600";
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 pt-24 sm:p-6 sm:pt-24">
+    <div className="min-h-screen bg-slate-50 p-4 pt-5 sm:p-6 sm:pt-6">
       <div className="max-w-7xl mx-auto">
         
         {/* Header */}
-        <div className="mb-7 overflow-hidden rounded-2xl bg-gradient-to-br from-[#102a43] via-[#164e63] to-[#0e7490] p-6 text-white shadow-xl sm:p-8">
+        <div className="mb-7 overflow-hidden rounded-3xl bg-gradient-to-br from-[#102a43] via-[#164e63] to-[#0e7490] p-6 text-white shadow-xl sm:p-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-cyan-200">Club workspace</p>
@@ -217,20 +217,23 @@ const ClubDashboard = () => {
 
         {/* Event Form */}
         {isFormOpen && (
-          <div className="mb-8 rounded-2xl border border-cyan-100 bg-white p-5 shadow-xl shadow-cyan-900/5 animate-in fade-in slide-in-from-top-4 duration-300 sm:p-7">
-            <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm" onClick={resetForm}>
+          <div className="max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-300 sm:p-9" onClick={(event) => event.stopPropagation()}>
+            <div className="mb-8 flex items-center justify-between border-b border-slate-100 pb-6">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-600">Event builder</p>
                 <h2 className="mt-1 text-xl font-bold text-slate-900">
               {editingId ? "Edit Event Details" : "Create New Event"}
                 </h2>
               </div>
-              <Calendar className="hidden text-cyan-500 sm:block" size={28} />
+              <button type="button" onClick={resetForm} className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Close event form">
+                <X size={24} />
+              </button>
             </div>
             <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
+              <div className="mb-8 grid grid-cols-1 gap-x-6 gap-y-6 md:grid-cols-2 lg:grid-cols-3">
                 <div className="col-span-1 md:col-span-2">
-                  <label className={labelClasses}>Event Title</label>
+                  <label className={labelClasses}>Event Title <span className="text-red-500">*</span></label>
                   <input
                     placeholder="e.g. Hackathon 2024"
                     value={form.title}
@@ -240,7 +243,7 @@ const ClubDashboard = () => {
                   />
                 </div>
                 <div>
-                  <label className={labelClasses}>Category</label>
+                  <label className={labelClasses}>Category <span className="text-red-500">*</span></label>
                   <select
                     value={form.category}
                     onChange={(e) => setForm({ ...form, category: e.target.value })}
@@ -254,7 +257,7 @@ const ClubDashboard = () => {
                 </div>
                 
                 <div>
-                  <label className={labelClasses}>Date</label>
+                  <label className={labelClasses}>Date <span className="text-red-500">*</span></label>
                   <input
                     type="date"
                     value={form.date}
@@ -313,32 +316,40 @@ const ClubDashboard = () => {
                     placeholder="Describe your event..."
                     value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    className={`${inputClasses} h-24 resize-none`}
+                    className={`${inputClasses} h-32 resize-none`}
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col-reverse justify-end gap-3 border-t border-slate-100 pt-5 sm:flex-row">
+              <div className="flex flex-col-reverse justify-end gap-3 border-t border-slate-100 pt-7 sm:flex-row">
                 <button
                   type="button"
                   onClick={() => setIsFormOpen(false)}
-                    className="rounded-xl border border-slate-200 px-5 py-2.5 text-slate-700 transition-colors hover:bg-slate-50"
+                    className="rounded-xl border border-slate-200 px-6 py-3 text-base text-slate-700 transition-colors hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-xl bg-cyan-600 px-6 py-2.5 font-bold text-white shadow-lg shadow-cyan-600/20 transition-colors hover:bg-cyan-700 disabled:opacity-50"
+                  className="rounded-xl bg-cyan-600 px-8 py-3 text-base font-bold text-white shadow-lg shadow-cyan-600/20 transition-colors hover:bg-cyan-700 disabled:opacity-50"
                 >
                   {saving ? "Saving..." : editingId ? "Update Event" : "Publish Event"}
                 </button>
               </div>
             </form>
           </div>
+          </div>
         )}
 
         {/* Event List */}
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-600">Your calendar</p>
+            <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">Published events</h2>
+          </div>
+          <span className="hidden text-sm text-slate-500 sm:block">Manage content and attendance</span>
+        </div>
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-gray-500">
             <Loader2 className="animate-spin mb-3 text-indigo-600" size={40} />
@@ -360,10 +371,10 @@ const ClubDashboard = () => {
             {events.map((ev) => (
               <div
                 key={ev._id}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow duration-200 hover:shadow-xl"
+                className="uniform-card group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow duration-200 hover:shadow-xl"
               >
                 {/* Card Image */}
-                <div className="relative h-40 overflow-hidden bg-slate-100">
+                <div className="uniform-card-media relative overflow-hidden bg-slate-100">
                   {ev.imageUrl ? (
                     <img src={ev.imageUrl} alt={ev.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
@@ -379,7 +390,7 @@ const ClubDashboard = () => {
                 </div>
 
                 {/* Card Content */}
-                <div className="flex flex-1 flex-col p-5">
+                <div className="uniform-card-body flex-1 p-5">
                   <h3 className="mb-2 line-clamp-1 text-lg font-bold text-slate-900">{ev.title}</h3>
                   
                   <div className="space-y-2 mb-4">

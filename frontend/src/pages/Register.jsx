@@ -159,51 +159,51 @@ export default function Register() {
 
             {step === 1 ? (
                 <form onSubmit={handleRegister} className="flex flex-col gap-3">
-                    <input 
+                    <label className="text-xs font-semibold text-slate-600">Full Name <span className="text-red-500">*</span></label><input 
                       name="name" type="text" placeholder="Full Name" required 
                       value={formData.name} onChange={handleChange} 
                       className="p-3 border rounded focus:ring-2 focus:ring-green-500 outline-none" 
                     />
-                    <input 
+                    <label className="text-xs font-semibold text-slate-600">Email <span className="text-red-500">*</span></label><input 
                       name="email" type="email" placeholder="Email" required 
                       value={formData.email} onChange={handleChange} 
                       className="p-3 border rounded focus:ring-2 focus:ring-green-500 outline-none" 
                     />
-                    <input 
+                    <label className="text-xs font-semibold text-slate-600">Phone <span className="text-red-500">*</span></label><input 
                       name="phone" type="tel" placeholder="Phone Number" required 
                       value={formData.phone} onChange={handleChange} 
                       className="p-3 border rounded focus:ring-2 focus:ring-green-500 outline-none" 
                     />
                     <div className="flex gap-2">
-                        <input 
+                        <label className="text-xs font-semibold text-slate-600">Q-ID <span className="text-red-500">*</span></label><input 
                           name="q_id" type="text" placeholder="Q-ID" required 
                           value={formData.q_id} onChange={handleChange} 
                           className="p-3 border rounded w-1/2 focus:ring-2 focus:ring-green-500 outline-none" 
                         />
-                        <input 
+                        <label className="text-xs font-semibold text-slate-600">Section <span className="text-red-500">*</span></label><input 
                           name="section" type="text" placeholder="Section" required 
                           value={formData.section} onChange={handleChange} 
                           className="p-3 border rounded w-1/2 focus:ring-2 focus:ring-green-500 outline-none" 
                         />
                     </div>
                     <div className="flex gap-2">
-                        <input 
+                        <label className="text-xs font-semibold text-slate-600">Course <span className="text-red-500">*</span></label><input 
                           name="course" type="text" placeholder="Course" required 
                           value={formData.course} onChange={handleChange} 
                           className="p-3 border rounded w-1/2 focus:ring-2 focus:ring-green-500 outline-none" 
                         />
-                        <input 
+                        <label className="text-xs font-semibold text-slate-600">Year <span className="text-red-500">*</span></label><input 
                           name="year" type="text" placeholder="Year" required 
                           value={formData.year} onChange={handleChange} 
                           className="p-3 border rounded w-1/2 focus:ring-2 focus:ring-green-500 outline-none" 
                         />
                     </div>
-                    <input 
+                    <label className="text-xs font-semibold text-slate-600">Password <span className="text-red-500">*</span></label><input 
                       name="password" type="password" placeholder="Password" required 
                       value={formData.password} onChange={handleChange} 
                       className="p-3 border rounded focus:ring-2 focus:ring-green-500 outline-none" 
                     />
-                    <input 
+                    <label className="text-xs font-semibold text-slate-600">Confirm Password <span className="text-red-500">*</span></label><input 
                       name="confirmPassword" type="password" placeholder="Confirm Password" required 
                       value={formData.confirmPassword} onChange={handleChange} 
                       className="p-3 border rounded focus:ring-2 focus:ring-green-500 outline-none" 

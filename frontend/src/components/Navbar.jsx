@@ -96,7 +96,7 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold text-white tracking-wide flex items-center gap-2">
+          <Link to="/dashboard" className="text-2xl font-bold text-white tracking-wide flex items-center gap-2">
             <span className="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm">Q</span>
             QuEventHub
           </Link>
@@ -117,8 +117,6 @@ const Navbar = () => {
             ) : (
               <>
                 <NavLink to="/dashboard">Student Dashboard</NavLink>
-                <NavLink to="/">Home</NavLink>
-                
                 {/* Events Dropdown */}
                 <FlyoutLink 
                   title="Events" 

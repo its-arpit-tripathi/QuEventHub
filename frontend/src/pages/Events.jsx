@@ -142,6 +142,13 @@ const Events = () => {
 
       {/* Events Grid */}
       <div className="max-w-7xl mx-auto">
+                <div className="mb-5 flex items-end justify-between gap-4">
+                    <div>
+                        <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">Campus calendar</p>
+                        <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">Upcoming events</h2>
+                    </div>
+                    <span className="hidden text-sm text-slate-500 sm:block">Find your next reason to show up</span>
+                </div>
         {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 size={48} className="animate-spin text-blue-600 mb-4" />
@@ -171,10 +178,10 @@ const Events = () => {
                     return (
                         <div 
                             key={event._id} 
-                            className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full"
+                            className="uniform-card group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-xl"
                         >
                             {/* Card Image Area */}
-                            <div className="relative h-36 bg-gray-200 overflow-hidden">
+                            <div className="uniform-card-media relative overflow-hidden bg-gray-200">
                                 {event.imageUrl || event.image?.path ? (
                                     <img 
                                         src={event.imageUrl || event.image?.path} 
@@ -204,7 +211,7 @@ const Events = () => {
                             </div>
 
                             {/* Content Area */}
-                            <div className="flex flex-grow flex-col p-4">
+                            <div className="uniform-card-body flex-grow p-4">
                                 <h2 className="mb-2 line-clamp-1 text-lg font-bold text-gray-900 transition-colors group-hover:text-blue-600">
                                     {event.title}
                                 </h2>

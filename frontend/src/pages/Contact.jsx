@@ -117,7 +117,7 @@ const Contact = () => {
             
             {/* Name Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name <span className="text-red-500">*</span></label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <User className="h-5 w-5 text-gray-400" />
@@ -137,7 +137,7 @@ const Contact = () => {
 
             {/* Email Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address <span className="text-red-500">*</span></label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-gray-400" />
@@ -157,7 +157,7 @@ const Contact = () => {
 
             {/* Message Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Message <span className="text-red-500">*</span></label>
               <div className="relative">
                 <div className="absolute top-3 left-3 pointer-events-none">
                   <MessageSquare className="h-5 w-5 text-gray-400" />
